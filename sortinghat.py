@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import pandas as pd
 import altair as alt
 from collections import Counter
@@ -66,7 +66,7 @@ QUESTIONS = [
         ],
     },
     {
-        "q": "You’re sitting with your friends and one seems particularly down and you’re the only one who has noticed. What do you do?",
+        "q": "You're sitting with your friends and one seems particularly down and you're the only one who has noticed. What do you do?",
         "opts": [
             ("Say nothing and try to figure out what might have happened.", {"Ravenclaw": 2, "Slytherin": 1}),
             ("Try to lighten their mood by making a joke you know they would appreciate.", {"Gryffindor": 2, "Ravenclaw": 1}),
@@ -75,12 +75,12 @@ QUESTIONS = [
         ],
     },
     {
-        "q": "You’re at a casual campus party, and you don’t know many people there. The room is buzzing with conversation, music, and laughter. You’re trying to figure out how to spend your time. What do you do?",
+        "q": "You're at a casual campus party, and you don't know many people there. The room is buzzing with conversation, music, and laughter. You're trying to figure out how to spend your time. What do you do?",
         "opts": [
-            ("Hang back for a bit, observe how everyone’s interacting, and join the conversations that genuinely interest you.", {"Ravenclaw": 3, "Slytherin": 1}),
+            ("Hang back for a bit, observe how everyone's interacting, and join the conversations that genuinely interest you.", {"Ravenclaw": 3, "Slytherin": 1}),
             ("Float around quietly, observing the room, noticing dynamics, and deciding who to talk to.", {"Slytherin": 2, "Ravenclaw": 2}),
             ("Find a quiet spot, scroll through your phone for a bit, and join in when it feels right.", {"Hufflepuff": 2, "Ravenclaw": 2}),
-            ("Make small talk with multiple groups, seeing where you can fit in and who’s worth getting to know.", {"Slytherin": 3, "Gryffindor": 1}),
+            ("Make small talk with multiple groups, seeing where you can fit in and who's worth getting to know.", {"Slytherin": 3, "Gryffindor": 1}),
             ("Introduce yourself to a few new people, and start chatting, seeing where the conversations take you.", {"Gryffindor": 3}),
             ("Join the card game going on in the corner of the room.", {"Slytherin": 2, "Gryffindor": 1}),
             ("Help someone who seems left out of the party by bringing them a drink or including them in conversation.", {"Hufflepuff": 3, "Gryffindor": 1}),
@@ -96,12 +96,12 @@ QUESTIONS = [
         ],
     },
     {
-        "q": "What would be the first spell you’d yell out if someone tries to hex you while you’re walking alone in a dark street at night?",
+        "q": "What would be the first spell you'd yell out if someone tries to hex you while you're walking alone in a dark street at night?",
         "opts": [
             ("Wand - ejecting spell", {"Gryffindor": 1, "Ravenclaw": -2, "Slytherin": -2}),
             ("A spell that creates microscopic wounds, making the receptor bleed out", {"Ravenclaw": 2, "Slytherin": 2}),
             ("A spell that renders someone unconscious", {"Hufflepuff": 2, "Ravenclaw": 1}),
-            ("I’d just teleport out of there", {"Ravenclaw": 2, "Hufflepuff": 1}),
+            ("I'd just teleport out of there", {"Ravenclaw": 2, "Hufflepuff": 1}),
         ],
     },
     {
@@ -136,68 +136,6 @@ QUESTIONS = [
     },
 ]
 
-import streamlit as st
-import pandas as pd
-import altair as alt
-from collections import Counter
-import random
-from datetime import datetime
-import os
-import difflib
-import time
-
-# --- Constants ---
-HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
-
-QUESTIONS = [
-    {
-        "q": "You were in the library and accidentally skipped lunch. What do you do?",
-        "opts": [
-            ("Try something new from the tuck shop that you've never had before", {"Gryffindor": 3, "Ravenclaw": 1}),
-            ("Eat the packet of chips your roommates has kept on their desk for the past 3 weeks", {"Slytherin": 3, "Gryffindor": 1}),
-            ("Skip it and stay hungry till snack time", {"Hufflepuff": 3, "Slytherin": 1, "Ravenclaw": -2}),
-        ],
-    },
-    {
-        "q": "While working in a group setting for ILGC, what position are you most likely to take?",
-        "opts": [
-            ("The leader - The one frantically trying to structure your answer so it's optimised, demanding answers and new insights, making sure every member of your team is participating.", {"Gryffindor": 3, "Slytherin": 2}),
-            ("The mediator - The one balancing and dialing back wild ideas that your team members present without hurting their feelings", {"Hufflepuff": 3, "Slytherin": -2}),
-            ("The realist - The one who keeps reminding others of the 'economic feasibility' of a solution", {"Slytherin": 2, "Ravenclaw": 1}),
-            ("The dreamer - The one truly believes if an idea is good enough the funds will follow", {"Hufflepuff": 3, "Slytherin": 1, "Ravenclaw": -2}),
-            ("The chill guy - The one who's just there to get a passing grade", {"Gryffindor": 2, "Hufflepuff": 2, "Ravenclaw": -3}),
-        ],
-    },
-    {
-        "q": "You've just received an angry Kannan sir complaint letter in the middle of the Great Hall during breakfast. What is your immediate reaction?",
-        "opts": [
-            ("The Unfazed - You open it quickly to get it over with, shrugging off the embarrassment. You'll deal with the sender later; for now, you have a Potions essay to think about.", {"Ravenclaw": 3, "Slytherin": 1}),
-            ("The Confrontationalist - You flush red with anger and embarrassment, already planning your equally loud and public retaliation against whoever sent it.", {"Gryffindor": 3, "Slytherin": 2, "Hufflepuff": -2}),
-            ("The Peacemaker - You are mortified, not just for yourself, but for disrupting everyone's breakfast. You try to silence it quickly and apologise to those around you.", {"Hufflepuff": 3, "Slytherin": -2}),
-            ("The Performer - You let it scream, finding the situation grimly amusing. You might even bow ironically when it's done, turning the humiliation into a moment of dark comedy.", {"Slytherin": 2, "Gryffindor": 1, "Hufflepuff": -3}),
-        ],
-    },
-    {
-        "q": "Professor Snape accuses you of cheating on a perfect exam paper, simply because he believes you're not clever enough to have written it. How do you respond?",
-        "opts": [
-            ("The Advocate - You calmly and logically defend your work, referencing the exact pages in Magical Drafts and Potions that support your answers, determined to prove your competence through pure reason.", {"Ravenclaw": 3, "Hufflepuff": 1}),
-            ("The Defiant - You argue back passionately, insisting on your innocence and calling out the injustice of the accusation in front of the whole class. It's the principle of the matter.", {"Gryffindor": 3, "Slytherin": -2}),
-            ("The Strategist - You say nothing in class but later seek out Professor McGonagall or your Head of House, presenting your case to a higher, fairer authority to overturn the verdict.", {"Slytherin": 3, "Ravenclaw": 1}),
-            ("The Conciliator - You don't argue, as it would only make things worse. You simply accept the unfair accusation, hoping your consistent hard work will eventually prove him wrong.", {"Hufflepuff": 3, "Gryffindor": -3}),
-        ],
-    },
-    {
-        "q": "You stumble upon the Room of Requirement. What does it become for you?",
-        "opts": [
-            ("A Dueling Club - A fully equipped room with training dummies and padded floors, perfect for secretly mastering advanced defensive—and offensive—spells with your friends.", {"Gryffindor": 3, "Slytherin": 2}),
-            ("A Library of Lost Knowledge - A quiet, towering library filled with rare and forbidden texts that even the Restricted Section doesn't have.", {"Ravenclaw": 3, "Slytherin": 1}),
-            ("A Secret Common Room - A cozy, comfortable lounge with plush armchairs, a crackling fire, and an endless supply of snacks, where you and your friends from all houses can relax without judgment.", {"Hufflepuff": 3, "Gryffindor": 1}),
-            ("A Personalised Workshop - A sophisticated potions lab or a quiet study with a direct view of the Black Lake, perfectly tailored to help you achieve your ambitions and get ahead of the competition.", {"Slytherin": 3, "Hufflepuff": -2}),
-        ],
-    },
-    # ... (other questions remain unchanged)
-]
-
 def score_answers(selected_options):
     scores = Counter()
     for option in selected_options:
@@ -221,20 +159,48 @@ def is_name_similar(new_name, past_names, threshold=0.8):
             return True
     return False
 
+def calculate_house_scores(results_df):
+    """Calculate scores for each user for each house based on their assigned house"""
+    house_scores = {}
+    for house in HOUSES:
+        house_scores[house] = {}
+        house_members = results_df[results_df['house'] == house]
+        for _, member in house_members.iterrows():
+            name = member['name']
+            # Give full points to their assigned house, 0 to others
+            house_scores[house][name] = 1
+    return house_scores
+
+def find_house_champions(results_df):
+    """Find the user who contributed most to each house"""
+    champions = {}
+    for house in HOUSES:
+        house_members = results_df[results_df['house'] == house]
+        if len(house_members) > 0:
+            # For now, just pick the first member as champion
+            # In a more complex system, you could track individual contributions
+            champion = house_members.iloc[0]['name']
+            champions[house] = champion
+        else:
+            champions[house] = "None"
+    return champions
+
 # --- Streamlit page setup ---
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
 
-# Global background
+# Global background (default maroon)
 st.markdown(
     """
     <style>
-    .stApp { background-color: #CD5C5C; }
+    .stApp {
+        background-color: #CD5C5C;  /* maroon-ish */
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Title
+# Title banner
 st.markdown(
     """
     <div style="
@@ -256,7 +222,7 @@ st.markdown(
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
-    results_df = pd.DataFrame(columns=["name", "house", "timestamp", "total_points"])
+    results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
 # Name input
 st.markdown(
@@ -278,6 +244,7 @@ name = st.text_input("", key="name_input").strip()
 
 if name:
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
+    
     answers = []
 
     for i, q in enumerate(QUESTIONS, 1):
@@ -299,32 +266,57 @@ if name:
             unsafe_allow_html=True
         )
 
-        # Add placeholder to avoid pre-selection
-        options = ["Select an option..."] + [opt[0] for opt in q["opts"]]
-        choice = st.radio("Choose one:", options, key=f"q{i}")
-
-        if choice != "Select an option...":
+        choice = st.radio(
+            "Choose one:",
+            [opt[0] for opt in q["opts"]],
+            key=f"q{i}",
+            index=None
+        )
+        
+        if choice:
             for text, score_dict in q["opts"]:
                 if text == choice:
                     answers.append(score_dict)
         st.write("---")
 
-    # Reveal button
+    # Styled button
+    st.markdown(
+        """
+        <style>
+        div.stButton > button {
+            background: linear-gradient(135deg, #e8e0c4, #f8f4e5);
+            color: #3e2723;
+            border: 2px solid #5a4633;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-family: Georgia, serif;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+        div.stButton > button:hover {
+            background: #d7ccb0;
+            color: black;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     if st.button("Reveal My House"):
         if len(answers) != len(QUESTIONS):
             st.warning("Please answer all questions before revealing your house!")
         else:
             if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-                st.warning("It's almost like you already knew the questions...")
-                st.image("sansnoeyes.png", caption="you can't understand how this feels...")
+                st.warning("it's almost like you already knew the questions...")
+                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
             with st.spinner('The Sorting Hat is deciding...'):
                 time.sleep(2)
 
             counts = score_answers(answers)
             house, tied = determine_house(counts)
-            total_points = sum(counts.values())
 
+            # Map houses to colors
             house_colors = {
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
@@ -333,10 +325,23 @@ if name:
                 "Neutral": "#CD5C5C"
             }
 
+            # Change background dynamically
             bg_color = house_colors.get(house, "#CD5C5C")
-            st.markdown(f"<style>.stApp {{ background-color: {bg_color}; transition: background-color 1s; }}</style>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-color: {bg_color};
+                    transition: background-color 1s;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
             st.balloons()
 
+            # Results card
             st.markdown(
                 f"""
                 <div style="
@@ -356,18 +361,45 @@ if name:
             )
 
             # Save result
-            result = {"name": name, "house": house, "timestamp": datetime.now(), "total_points": total_points}
+            result = {"name": name, "house": house, "timestamp": datetime.now()}
             df_result = pd.DataFrame([result])
             results_df = pd.concat([results_df, df_result], ignore_index=True)
             results_df.to_csv("results.csv", index=False)
 
-            # House Summary
-            st.markdown("<h2>House Summary</h2>", unsafe_allow_html=True)
-            for h in HOUSES:
-                house_users = results_df[results_df['house'] == h]
-                total = len(house_users)
-                most_user = house_users.loc[house_users['total_points'].idxmax()]['name'] if total > 0 else "N/A"
-                st.markdown(f"<p style='font-size:18px;'><b>{h}</b>: {total} people, Most {h}: {most_user}</p>", unsafe_allow_html=True)
+            # Display House Champions and Member Counts
+            if len(results_df) > 0:
+                champions = find_house_champions(results_df)
+                house_counts = results_df['house'].value_counts().to_dict()
+                
+                st.markdown(
+                    """
+                    <div style="
+                        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                        border: 3px solid #5a4633;
+                        border-radius: 20px;
+                        padding: 20px;
+                        margin-top: 30px;
+                        box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                    ">
+                        <h2 style="color:#3e2723; font-family: 'Georgia'; text-align: center;">House Statistics</h2>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                
+                # House Champions
+                st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Most Dedicated House Members:</h3>", unsafe_allow_html=True)
+                for house in HOUSES:
+                    champion = champions.get(house, "None")
+                    st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most {house}:</strong> {champion}</p>", unsafe_allow_html=True)
+                
+                st.markdown("---")
+                
+                # Member Counts
+                st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Total Members in Each House:</h3>", unsafe_allow_html=True)
+                for house in HOUSES:
+                    count = house_counts.get(house, 0)
+                    st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>{house}:</strong> {count} members</p>", unsafe_allow_html=True)
 
 # Password-protected past results
 st.write("---")
@@ -394,6 +426,6 @@ if st.checkbox("Show past results"):
             try:
                 os.remove("results.csv")
                 st.success("Results file has been reset.")
-                st.experimental_rerun()
+                st.rerun()
             except FileNotFoundError:
                 st.info("No results file to reset.")
