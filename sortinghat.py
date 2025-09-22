@@ -252,8 +252,8 @@ if name:
 
         st.balloons()
 
-        st.write(f"### 🎉 {name}, you have been assigned to...")
-        st.write(f"### 🏰 {house}!")
+        st.write(f"###  {name}, you have been assigned to...")
+        st.write(f"###  {house}!")
 
         df_scores = pd.DataFrame({
             "House": HOUSES,
