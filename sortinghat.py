@@ -399,7 +399,7 @@ if name:
             if len(answers) != len(QUESTIONS):
                 st.warning("Please answer all questions before revealing your house!")
             else:
-                # NEW LOGIC: Perform the check and set a state variable
+                # Perform the check and set a state variable
                 if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
                     st.session_state.is_duplicate_name = True
                 
@@ -428,6 +428,7 @@ if name:
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
             # --- NEW ONE-SHOT LOGIC FOR WRITING TO CSV ---
+            # This block runs only once per submission, immediately after the button is pressed
             if st.session_state.submission_processed:
                 st.session_state.submission_processed = False # Reset the flag immediately
             
@@ -451,7 +452,7 @@ if name:
                 st.balloons()
                 st.session_state.balloons_shown = True
 
-            # Calculate the house
+            # Calculate the house again for display (after the submission processed block)
             counts = score_answers(current_answers)
             house, tied = determine_house(counts)
             
@@ -497,6 +498,14 @@ if name:
                 unsafe_allow_html=True
             )
             
+            # Check for a tie and display a message if one exists
+            if len(tied) > 1:
+                tied_houses_str = ", ".join(tied[:-1])
+                if len(tied) > 2:
+                    tied_houses_str += ","
+                tied_houses_str += f" and {tied[-1]}"
+                st.info(f"The sorting hat found a tie between {tied_houses_str} before making a final decision.")
+
             # Create a dataframe for the user's personal points
             df_scores_chart = pd.DataFrame({
                 "House": counts.keys(),
