@@ -174,7 +174,7 @@ except FileNotFoundError:
 name = st.text_input("What is your name?").strip()
 
 if name:
-    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values) or name in ["Kanishk", "Aaradhya", "Aman", "Malini", "Sara", "Avani", "Aarav", "Parth", "Khanak", "Prakamya", "Raka", "Maanal", "Maan", "Pahul", "Shaurya", "Kavya", "Manvi", "Anand", "Kabir", "Kashvi", "Ridhima", "Aahana", "Yashvi", "Manaasve", "Navya", "Ryan", "Uma"]:
+    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values) or name in ["Kanishk", "Simran", "Aaradhya", "Aman", "Malini", "Sara", "Avani", "Aarav", "Parth", "Khanak", "Prakamya", "Raka", "Maanal", "Maan", "Pahul", "Shaurya", "Kavya", "Manvi", "Anand", "Kabir", "Kashvi", "Ridhima", "Aahana", "Yashvi", "Manaasve", "Navya", "Ryan", "Uma"]:
         st.warning("Have you completed this test in the past?")
         st.image("doakes.webp", caption="Interesting")
     
