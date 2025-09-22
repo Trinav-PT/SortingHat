@@ -161,13 +161,13 @@ def is_name_similar(new_name, past_names, threshold=0.8):
             return True
     return False
 
-
+# --- Streamlit page setup ---
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
 
+# Global background (default maroon)
 st.markdown(
     """
     <style>
-    /* Global background */
     .stApp {
         background-color: #CD5C5C;  /* maroon-ish */
     }
@@ -176,8 +176,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-# Styled parchment banner for title
+# Title banner
 st.markdown(
     """
     <div style="
@@ -195,12 +194,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Load past results
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
     results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
-# Name input inside parchment card
+# Name input
 st.markdown(
     """
     <div style="
@@ -216,7 +216,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 name = st.text_input("", key="name_input").strip()
 
 if name:
@@ -225,7 +224,6 @@ if name:
     answers = []
 
     for i, q in enumerate(QUESTIONS, 1):
-        # Question parchment card
         st.markdown(
             f"""
             <div style="
@@ -244,7 +242,6 @@ if name:
             unsafe_allow_html=True
         )
 
-        # Options inside styled card
         choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
@@ -259,25 +256,27 @@ if name:
         st.write("---")
 
     # Styled button
-    button_html = """
-    <style>
-    div.stButton > button {
-        background: linear-gradient(135deg, #e8e0c4, #f8f4e5);
-        color: #3e2723;
-        border: 2px solid #5a4633;
-        border-radius: 12px;
-        padding: 10px 20px;
-        font-size: 18px;
-        font-family: Georgia, serif;
-        box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
-    }
-    div.stButton > button:hover {
-        background: #d7ccb0;
-        color: black;
-    }
-    </style>
-    """
-    st.markdown(button_html, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        div.stButton > button {
+            background: linear-gradient(135deg, #e8e0c4, #f8f4e5);
+            color: #3e2723;
+            border: 2px solid #5a4633;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-family: Georgia, serif;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+        div.stButton > button:hover {
+            background: #d7ccb0;
+            color: black;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
     if st.button("Reveal My House"):
         if len(answers) != len(QUESTIONS):
@@ -293,9 +292,32 @@ if name:
             counts = score_answers(answers)
             house, tied = determine_house(counts)
 
+            # Map houses to colors
+            house_colors = {
+                "Gryffindor": "#7F0909",
+                "Slytherin": "#1A472A",
+                "Ravenclaw": "#0E1A40",
+                "Hufflepuff": "#EEE117",
+                "Neutral": "#CD5C5C"
+            }
+
+            # Change background dynamically
+            bg_color = house_colors.get(house, "#CD5C5C")
+            st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-color: {bg_color};
+                    transition: background-color 1s;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
             st.balloons()
 
-            # Results parchment card
+            # Results card
             st.markdown(
                 f"""
                 <div style="
@@ -314,54 +336,26 @@ if name:
                 unsafe_allow_html=True
             )
 
-            df_scores = pd.DataFrame({
-                "House": HOUSES,
-                "Score": [counts.get(h, 0) for h in HOUSES]
-            })
-
-            house_colors = {
-                "Gryffindor": "#7F0909",
-                "Slytherin": "#1A472A",
-                "Ravenclaw": "#0E1A40",
-                "Hufflepuff": "#EEE117"
-            }
-
-            base = alt.Chart(df_scores).encode(
-                theta=alt.Theta("Score", stack=True)
-            )
-
-            pie = base.mark_arc(outerRadius=120).encode(
-                color=alt.Color("House", scale=alt.Scale(domain=list(house_colors.keys()),
-                                                         range=list(house_colors.values()))),
-                order=alt.Order("Score", sort="descending"),
-                tooltip=["House", "Score"]
-            )
-
-            text = base.mark_text(radius=140).encode(
-                text="Score",
-                order=alt.Order("Score", sort="descending"),
-                color=alt.value("black")
-            )
-
-            chart = pie + text
-            st.altair_chart(chart)
-
-            st.image(f"https://raw.githubusercontent.com/your-username/hogwarts-images/main/{house.lower()}.png",
-                      caption=f"{house} Crest", width=250)
-
+            # Save result
             result = {"name": name, "house": house, "timestamp": datetime.now()}
             df_result = pd.DataFrame([result])
+            results_df = pd.concat([results_df, df_result], ignore_index=True)
+            results_df.to_csv("results.csv", index=False)
 
-            df_result = pd.concat([results_df, df_result], ignore_index=True)
-            df_result.to_csv("results.csv", index=False)
+            # Leaderboard
+            leaderboard_counts = results_df['house'].value_counts().to_dict()
+            leaderboard_text = "<h2>Leaderboard</h2>"
+            for h in HOUSES + ["Neutral"]:
+                leaderboard_text += f"<p style='font-size:18px;'>{h}: {leaderboard_counts.get(h,0)}</p>"
+            st.markdown(leaderboard_text, unsafe_allow_html=True)
 
+# Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
     password_input = st.text_input(
         "Do you really think you can comprehend this knowledge? Then enter the magic word...",
         type="password"
     )
-
     try:
         correct_password = st.secrets["passwords"]["admin"]
     except KeyError:
