@@ -232,6 +232,8 @@ if 'balloons_shown' not in st.session_state:
     st.session_state.balloons_shown = False
 if 'is_duplicate_name' not in st.session_state:
     st.session_state.is_duplicate_name = False
+if 'submission_processed' not in st.session_state:
+    st.session_state.submission_processed = False
 
 # Global background (default maroon)
 st.markdown(
@@ -401,7 +403,8 @@ if name:
                 if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
                     st.session_state.is_duplicate_name = True
                 
-                # Set the flags to show results
+                # Set a flag to process the submission in the next rerun
+                st.session_state.submission_processed = True
                 st.session_state.house_revealed = True
                 st.rerun()  # Refresh to show results
 
@@ -424,6 +427,22 @@ if name:
                 st.warning("it's almost like you already knew the questions...")
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
+            # --- NEW ONE-SHOT LOGIC FOR WRITING TO CSV ---
+            if st.session_state.submission_processed:
+                st.session_state.submission_processed = False # Reset the flag immediately
+            
+                # Calculate the house
+                counts = score_answers(current_answers)
+                house, tied = determine_house(counts)
+            
+                # Save the new result
+                result = {"name": name, "house": house, "timestamp": datetime.now()}
+                df_result = pd.DataFrame([result])
+                
+                # Append to the main DataFrame and save to CSV
+                results_df = pd.concat([results_df, df_result], ignore_index=True)
+                results_df.to_csv("results.csv", index=False)
+
             with st.spinner('The Sorting Hat is deciding...'):
                 time.sleep(2)
 
@@ -435,16 +454,7 @@ if name:
             # Calculate the house
             counts = score_answers(current_answers)
             house, tied = determine_house(counts)
-
-            # Save result (always save, even if duplicate - let CSV handle it)
-            result = {"name": name, "house": house, "timestamp": datetime.now()}
-            df_result = pd.DataFrame([result])
             
-            # This is the line that was causing the problem.
-            # We are now unconditionally appending all results.
-            results_df = pd.concat([results_df, df_result], ignore_index=True)
-            results_df.to_csv("results.csv", index=False)
-
             # Map houses to colors
             house_colors = {
                 "Gryffindor": "#7F0909",
