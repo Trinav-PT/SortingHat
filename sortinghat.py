@@ -326,7 +326,7 @@ st.markdown(
         margin-bottom: 20px;
         box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
     ">
-        <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
+        <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name? [Enter your full name to reduce likelihood of encountering a secret jumpscare]</h3>
     </div>
     """,
     unsafe_allow_html=True
