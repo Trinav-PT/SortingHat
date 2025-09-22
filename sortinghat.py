@@ -175,9 +175,9 @@ name = st.text_input("What is your name?").strip()
 
 if name:
     # Check for both exact and similar name matches
-    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-        st.warning("Have you completed this test in the past?")
-        st.image("doakes.webp", caption="Interesting")
+    # if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+    #     st.warning("Have you completed this test in the past?")
+    #     st.image("doakes.webp", caption="Interesting")
     
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
