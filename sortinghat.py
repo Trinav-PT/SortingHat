@@ -261,44 +261,48 @@ try:
 except FileNotFoundError:
     results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
-# Display House Champions and Statistics on Landing Page
-if len(results_df) > 0:
-    champions, most_neutral = calculate_user_house_scores(results_df)
-    house_counts = results_df['house'].value_counts().to_dict()
-    
-    st.markdown(
-        """
-        <div style="
-            background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
-            border: 3px solid #5a4633;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
-        ">
-            <h2 style="color:#3e2723; font-family: 'Georgia'; text-align: center;">House Champions & Statistics</h2>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    # House Champions
-    st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Most Dedicated House Members:</h3>", unsafe_allow_html=True)
-    for house in HOUSES:
-        champion = champions.get(house, "None")
-        st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most {house}:</strong> {champion}</p>", unsafe_allow_html=True)
-    
-    # Most Neutral Person
-    st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most Neutral:</strong> {most_neutral}</p>", unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Member Counts
-    st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Total Members in Each House:</h3>", unsafe_allow_html=True)
-    for house in HOUSES:
-        count = house_counts.get(house, 0)
-        st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>{house}:</strong> {count} members</p>", unsafe_allow_html=True)
-    
+# Optional leaderboard display
+if st.checkbox("Show House Champions & Statistics"):
+    if len(results_df) > 0:
+        champions, most_neutral = calculate_user_house_scores(results_df)
+        house_counts = results_df['house'].value_counts().to_dict()
+        
+        st.markdown(
+            """
+            <div style="
+                background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                border: 3px solid #5a4633;
+                border-radius: 20px;
+                padding: 20px;
+                margin-bottom: 30px;
+                box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+            ">
+                <h2 style="color:#3e2723; font-family: 'Georgia'; text-align: center;">House Champions & Statistics</h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        # House Champions
+        st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Most Dedicated House Members:</h3>", unsafe_allow_html=True)
+        for house in HOUSES:
+            champion = champions.get(house, "None")
+            st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most {house}:</strong> {champion}</p>", unsafe_allow_html=True)
+        
+        # Most Neutral Person
+        st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most Neutral:</strong> {most_neutral}</p>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+        
+        # Member Counts
+        st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Total Members in Each House:</h3>", unsafe_allow_html=True)
+        for house in HOUSES:
+            count = house_counts.get(house, 0)
+            st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>{house}:</strong> {count} members</p>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+    else:
+        st.info("No results available yet. Complete the sorting to see statistics!")
     st.markdown("---")
 
 # Name input
