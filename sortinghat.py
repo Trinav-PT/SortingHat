@@ -202,7 +202,7 @@ if name:
         if len(answers) != len(QUESTIONS):
             st.warning("Please answer all questions before revealing your house!")
         else:
-            if name in results_df['name'].values:
+            if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
                 st.warning("it's almost like you already knew the questions...")
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
