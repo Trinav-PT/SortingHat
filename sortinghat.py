@@ -171,38 +171,10 @@ st.markdown(
     .stApp {
         background-color: #3e1f1f;  /* maroon-ish */
     }
-
-    /* Style radio options */
-    div[role="radiogroup"] > label {
-        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
-        border: 2px solid #5a4633;
-        border-radius: 12px;
-        padding: 10px 15px;
-        margin-bottom: 8px;
-        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-        color: black !important;   /* <-- changed to black */
-        font-family: Georgia, serif;
-        display: block;
-    }
-
-    /* Hover effect */
-    div[role="radiogroup"] > label:hover {
-        background: #d7ccb0;
-        cursor: pointer;
-    }
-
-    /* Selected option */
-    div[role="radiogroup"] > label[data-selected="true"] {
-        background: #cbbf9f;
-        border: 2px solid #3e2723;
-        font-weight: bold;
-        color: black !important;  /* ensure stays black */
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 
 # Styled parchment banner for title
