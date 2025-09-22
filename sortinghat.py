@@ -410,32 +410,26 @@ if name:
                         break
         
         if len(current_answers) == len(QUESTIONS):
-            # Only show the warning and process if we haven't already saved this result
-            if name not in results_df['name'].values and not is_name_similar(name, results_df['name'].values):
-                if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-                    st.warning("it's almost like you already knew the questions...")
-                    st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+            # Check for duplicate name warning
+            if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+                st.warning("it's almost like you already knew the questions...")
+                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-                with st.spinner('The Sorting Hat is deciding...'):
-                    time.sleep(2)
+            with st.spinner('The Sorting Hat is deciding...'):
+                time.sleep(2)
 
-                counts = score_answers(current_answers)
-                house, tied = determine_house(counts)
+            # Calculate the house
+            counts = score_answers(current_answers)
+            house, tied = determine_house(counts)
 
-                # Save result first
-                result = {"name": name, "house": house, "timestamp": datetime.now()}
-                df_result = pd.DataFrame([result])
+            # Save result (always save, even if duplicate - let CSV handle it)
+            result = {"name": name, "house": house, "timestamp": datetime.now()}
+            df_result = pd.DataFrame([result])
+            
+            # Check if this exact user already exists, if not add them
+            if name not in results_df['name'].values:
                 results_df = pd.concat([results_df, df_result], ignore_index=True)
                 results_df.to_csv("results.csv", index=False)
-            else:
-                # User already exists, get their house from the dataframe
-                existing_user = results_df[results_df['name'] == name]
-                if len(existing_user) > 0:
-                    house = existing_user.iloc[0]['house']
-                else:
-                    # Fallback calculation
-                    counts = score_answers(current_answers)
-                    house, tied = determine_house(counts)
 
             # Map houses to colors
             house_colors = {
@@ -483,12 +477,12 @@ if name:
 
             # Reload the results dataframe to get the most current data
             try:
-                results_df = pd.read_csv("results.csv")
+                fresh_results_df = pd.read_csv("results.csv")
             except FileNotFoundError:
-                results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
+                fresh_results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
-            # Show house distribution chart with updated data
-            updated_house_counts = results_df['house'].value_counts().to_dict()
+            # Show house distribution chart with the fresh data
+            updated_house_counts = fresh_results_df['house'].value_counts().to_dict()
         
         st.markdown(
             """
