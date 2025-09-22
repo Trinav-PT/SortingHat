@@ -440,10 +440,10 @@ if name:
             result = {"name": name, "house": house, "timestamp": datetime.now()}
             df_result = pd.DataFrame([result])
             
-            # Check if this exact user already exists, if not add them
-            if name not in results_df['name'].values:
-                results_df = pd.concat([results_df, df_result], ignore_index=True)
-                results_df.to_csv("results.csv", index=False)
+            # This is the line that was causing the problem.
+            # We are now unconditionally appending all results.
+            results_df = pd.concat([results_df, df_result], ignore_index=True)
+            results_df.to_csv("results.csv", index=False)
 
             # Map houses to colors
             house_colors = {
