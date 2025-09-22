@@ -196,7 +196,7 @@ st.markdown(
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
-    results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
+    results_df = pd.DataFrame(columns=["name", "house", "timestamp", "total_points"])
 
 # Name input
 st.markdown(
@@ -243,8 +243,7 @@ if name:
         choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
-            key=f"q{i}",
-            index=None
+            key=f"q{i}"
         )
         
         if choice:
@@ -281,7 +280,7 @@ if name:
             st.warning("Please answer all questions before revealing your house!")
         else:
             if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-                st.warning("it's almost like you already knew the questions...")
+                st.warning("It's almost like you already knew the questions...")
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
             with st.spinner('The Sorting Hat is deciding...'):
@@ -289,6 +288,8 @@ if name:
 
             counts = score_answers(answers)
             house, tied = determine_house(counts)
+
+            total_points = sum(counts.values())
 
             # Map houses to colors
             house_colors = {
@@ -335,41 +336,26 @@ if name:
             )
 
             # Save result
-            result = {"name": name, "house": house, "timestamp": datetime.now()}
+            result = {"name": name, "house": house, "timestamp": datetime.now(), "total_points": total_points}
             df_result = pd.DataFrame([result])
             results_df = pd.concat([results_df, df_result], ignore_index=True)
             results_df.to_csv("results.csv", index=False)
 
-            # After saving the result
-            results_df = pd.concat([results_df, df_result], ignore_index=True)
-            results_df.to_csv("results.csv", index=False)
-            
-            # --- New house summary ---
+            # --- House Summary ---
             st.markdown("<h2>House Summary</h2>", unsafe_allow_html=True)
             
             for h in HOUSES:
-                # Filter results for current house
-                house_df = results_df.copy()
-                
-                # Compute "most house" scorer: highest points relative to other houses
-                def house_score(row, house_name):
-                    # Sum of points for the house in their answers
-                    return score_answers([dict(HOUSES[i]: 1 for i in range(len(HOUSES)))])  # placeholder
-                
-                # Actually, simplest: find user(s) assigned to this house with max score
                 house_users = results_df[results_df['house'] == h]
-                
-                # Total people in house
                 total = len(house_users)
-                
-                # Most house user
                 if total > 0:
-                    # Compute relative score: here just max count per house
-                    most_user = house_users.iloc[-1]['name']  # last user in this house as placeholder
+                    most_user = house_users.loc[house_users['total_points'].idxmax()]['name']
                 else:
                     most_user = "N/A"
-                
-                st.markdown(f"<p style='font-size:18px;'><b>{h}</b>: {total} people, Most {h}: {most_user}</p>", unsafe_allow_html=True)
+                st.markdown(
+                    f"<p style='font-size:18px;'><b>{h}</b>: {total} people, Most {h}: {most_user}</p>",
+                    unsafe_allow_html=True
+                )
+
 # Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
@@ -395,6 +381,6 @@ if st.checkbox("Show past results"):
             try:
                 os.remove("results.csv")
                 st.success("Results file has been reset.")
-                st.rerun()
+                st.experimental_rerun()
             except FileNotFoundError:
                 st.info("No results file to reset.")
