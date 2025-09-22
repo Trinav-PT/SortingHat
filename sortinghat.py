@@ -556,9 +556,7 @@ if name:
                             </div>
                             """,
                             unsafe_allow_html=True
-                        )
-
-# Password-protected past results
+        # Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
     password_input = st.text_input(
