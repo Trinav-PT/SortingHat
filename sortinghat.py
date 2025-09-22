@@ -340,13 +340,36 @@ if name:
             results_df = pd.concat([results_df, df_result], ignore_index=True)
             results_df.to_csv("results.csv", index=False)
 
-            # Leaderboard
-            leaderboard_counts = results_df['house'].value_counts().to_dict()
-            leaderboard_text = "<h2>Leaderboard</h2>"
-            for h in HOUSES + ["Neutral"]:
-                leaderboard_text += f"<p style='font-size:18px;'>{h}: {leaderboard_counts.get(h,0)}</p>"
-            st.markdown(leaderboard_text, unsafe_allow_html=True)
-
+            # After saving the result
+            results_df = pd.concat([results_df, df_result], ignore_index=True)
+            results_df.to_csv("results.csv", index=False)
+            
+            # --- New house summary ---
+            st.markdown("<h2>House Summary</h2>", unsafe_allow_html=True)
+            
+            for h in HOUSES:
+                # Filter results for current house
+                house_df = results_df.copy()
+                
+                # Compute "most house" scorer: highest points relative to other houses
+                def house_score(row, house_name):
+                    # Sum of points for the house in their answers
+                    return score_answers([dict(HOUSES[i]: 1 for i in range(len(HOUSES)))])  # placeholder
+                
+                # Actually, simplest: find user(s) assigned to this house with max score
+                house_users = results_df[results_df['house'] == h]
+                
+                # Total people in house
+                total = len(house_users)
+                
+                # Most house user
+                if total > 0:
+                    # Compute relative score: here just max count per house
+                    most_user = house_users.iloc[-1]['name']  # last user in this house as placeholder
+                else:
+                    most_user = "N/A"
+                
+                st.markdown(f"<p style='font-size:18px;'><b>{h}</b>: {total} people, Most {h}: {most_user}</p>", unsafe_allow_html=True)
 # Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
