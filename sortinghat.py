@@ -155,7 +155,6 @@ def determine_house(counts):
     return random.choice(top), top
 
 def is_name_similar(new_name, past_names, threshold=0.8):
-    """Checks if a new name is similar to any name in a list of past names."""
     for past_name in past_names:
         similarity = difflib.SequenceMatcher(None, new_name.lower(), past_name.lower()).ratio()
         if similarity >= threshold:
@@ -164,14 +163,48 @@ def is_name_similar(new_name, past_names, threshold=0.8):
 
 
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
-st.title("🧙‍♂️ SORTING HAT")
+
+# Styled parchment banner for title
+st.markdown(
+    """
+    <div style="
+        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+        border: 3px solid #5a4633;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+    ">
+        <h1 style="color:#3e2723; font-family: 'Georgia';">SORTING HAT</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
     results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
-name = st.text_input("What is your name?").strip()
+# Name input inside parchment card
+st.markdown(
+    """
+    <div style="
+        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+        border: 2px solid #5a4633;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+    ">
+        <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+name = st.text_input("", key="name_input").strip()
 
 if name:
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
@@ -179,7 +212,7 @@ if name:
     answers = []
 
     for i, q in enumerate(QUESTIONS, 1):
-        # Styled parchment-like question card
+        # Question parchment card
         st.markdown(
             f"""
             <div style="
@@ -187,7 +220,7 @@ if name:
                 border: 2px solid #5a4633;
                 border-radius: 15px;
                 padding: 20px;
-                margin-bottom: 20px;
+                margin-bottom: 10px;
                 box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
             ">
                 <h3 style="color:#3e2723; font-family: 'Georgia';">
@@ -198,6 +231,7 @@ if name:
             unsafe_allow_html=True
         )
 
+        # Options inside styled card
         choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
@@ -211,6 +245,27 @@ if name:
                     answers.append(score_dict)
         st.write("---")
 
+    # Styled button
+    button_html = """
+    <style>
+    div.stButton > button {
+        background: linear-gradient(135deg, #e8e0c4, #f8f4e5);
+        color: #3e2723;
+        border: 2px solid #5a4633;
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-size: 18px;
+        font-family: Georgia, serif;
+        box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+    }
+    div.stButton > button:hover {
+        background: #d7ccb0;
+        color: black;
+    }
+    </style>
+    """
+    st.markdown(button_html, unsafe_allow_html=True)
+
     if st.button("Reveal My House"):
         if len(answers) != len(QUESTIONS):
             st.warning("Please answer all questions before revealing your house!")
@@ -220,15 +275,31 @@ if name:
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
             with st.spinner('The Sorting Hat is deciding...'):
-                time.sleep(2) # Simulates a thinking process
+                time.sleep(2)
 
             counts = score_answers(answers)
             house, tied = determine_house(counts)
 
             st.balloons()
 
-            st.write(f"###  {name}, you have been assigned to...")
-            st.write(f"###  {house}!")
+            # Results parchment card
+            st.markdown(
+                f"""
+                <div style="
+                    background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                    border: 3px solid #5a4633;
+                    border-radius: 20px;
+                    padding: 20px;
+                    margin-top: 30px;
+                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                    text-align: center;
+                ">
+                    <h2 style="color:#3e2723; font-family: 'Georgia';">{name}, you have been assigned to...</h2>
+                    <h1 style="color:#3e2723; font-family: 'Georgia';">{house}!</h1>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
             df_scores = pd.DataFrame({
                 "House": HOUSES,
@@ -260,15 +331,13 @@ if name:
             )
 
             chart = pie + text
-
             st.altair_chart(chart)
 
             st.image(f"https://raw.githubusercontent.com/your-username/hogwarts-images/main/{house.lower()}.png",
                       caption=f"{house} Crest", width=250)
 
-
             result = {"name": name, "house": house, "timestamp": datetime.now()}
             df_result = pd.DataFrame([result])
 
             df_result = pd.concat([results_df, df_result], ignore_index=True)
-            df
+            df_result.to_csv("results.csv", index=False)
