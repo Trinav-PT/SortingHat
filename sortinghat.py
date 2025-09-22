@@ -8,9 +8,8 @@ import os
 import difflib
 import time
 
-
+# --- Constants ---
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
-
 
 QUESTIONS = [
     {
@@ -27,7 +26,7 @@ QUESTIONS = [
             ("The leader - The one frantically trying to structure your answer so it's optimised, demanding answers and new insights, making sure every member of your team is participating.", {"Gryffindor": 3, "Slytherin": 2}),
             ("The mediator - The one balancing and dialing back wild ideas that your team members present without hurting their feelings", {"Hufflepuff": 3, "Slytherin": -2}),
             ("The realist - The one who keeps reminding others of the 'economic feasibility' of a solution", {"Slytherin": 2, "Ravenclaw": 1}),
-            ("The dreamer - The one who truly believes if an idea is good enough the funds will follow", {"Hufflepuff": 3, "Slytherin": 1, "Ravenclaw": -2}),
+            ("The dreamer - The one truly believes if an idea is good enough the funds will follow", {"Hufflepuff": 3, "Slytherin": 1, "Ravenclaw": -2}),
             ("The chill guy - The one who's just there to get a passing grade", {"Gryffindor": 2, "Hufflepuff": 2, "Ravenclaw": -3}),
         ],
     },
@@ -137,7 +136,6 @@ QUESTIONS = [
     },
 ]
 
-
 def score_answers(selected_options):
     scores = Counter()
     for option in selected_options:
@@ -155,205 +153,207 @@ def determine_house(counts):
     return random.choice(top), top
 
 def is_name_similar(new_name, past_names, threshold=0.8):
-    """Checks if a new name is similar to any name in a list of past names."""
     for past_name in past_names:
         similarity = difflib.SequenceMatcher(None, new_name.lower(), past_name.lower()).ratio()
         if similarity >= threshold:
             return True
     return False
 
-
+# --- Streamlit page setup ---
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
-st.title("🧙‍♂️ SORTING HAT")
 
-# --- Initialize session state ---
-if "q_index" not in st.session_state:
-    st.session_state.q_index = 0
-if "answers" not in st.session_state:
-    st.session_state.answers = [None] * len(QUESTIONS)
-if "show_results" not in st.session_state:
-    st.session_state.show_results = False
+# Global background (default maroon)
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #CD5C5C;  /* maroon-ish */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
+# Title banner
+st.markdown(
+    """
+    <div style="
+        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+        border: 3px solid #5a4633;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+    ">
+        <h1 style="color:#3e2723; font-family: 'Georgia';">SORTING HAT</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# Load past results
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
-    results_df = pd.DataFrame(columns=["name", "assigned_house", "gryffindor_score", "slytherin_score", "ravenclaw_score", "hufflepuff_score", "timestamp"])
+    results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
-name = st.text_input("What is your name?").strip()
+# Name input
+st.markdown(
+    """
+    <div style="
+        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+        border: 2px solid #5a4633;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+    ">
+        <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+name = st.text_input("", key="name_input").strip()
 
 if name:
-    # Check for both exact and similar name matches
-    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-        st.warning("Have you completed this test in the past?")
-        st.image("doakes.webp", caption="Interesting")
-    
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
-    # --- Display a single question at a time ---
-    if not st.session_state.show_results:
-        q = QUESTIONS[st.session_state.q_index]
-        st.subheader(f"Q{st.session_state.q_index + 1}. {q['q']}")
-        
-        current_answer = st.session_state.answers[st.session_state.q_index]
-        
-        choice_text = st.radio(
+    answers = []
+
+    for i, q in enumerate(QUESTIONS, 1):
+        st.markdown(
+            f"""
+            <div style="
+                background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                border: 2px solid #5a4633;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 10px;
+                box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+            ">
+                <h3 style="color:#3e2723; font-family: 'Georgia';">
+                    Q{i}. {q['q']}
+                </h3>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
-            key=f"q{st.session_state.q_index}",
-            index=[opt[0] for opt in q["opts"]].index(current_answer[0])
-            if current_answer is not None
-            else None
+            key=f"q{i}",
+            index=None
         )
         
-        selected_option = next((opt[1] for opt in q["opts"] if opt[0] == choice_text), None)
-        st.session_state.answers[st.session_state.q_index] = (choice_text, selected_option)
-        
+        if choice:
+            for text, score_dict in q["opts"]:
+                if text == choice:
+                    answers.append(score_dict)
         st.write("---")
 
-        col1, col2 = st.columns(2)
-
-        with col1:
-            if st.session_state.q_index > 0:
-                if st.button("Previous"):
-                    st.session_state.q_index -= 1
-                    st.rerun()
-
-        with col2:
-            all_questions_answered = all(answer is not None for answer in st.session_state.answers)
-            
-            if st.session_state.q_index < len(QUESTIONS) - 1:
-                if st.button("Next", disabled=selected_option is None):
-                    st.session_state.q_index += 1
-                    st.rerun()
-            else:
-                button_text = "Reveal My House"
-                if not all_questions_answered:
-                    button_text = "Please answer all questions to proceed!"
-                
-                if st.button(button_text, disabled=not all_questions_answered):
-                    st.session_state.show_results = True
-                    st.rerun()
-    
-    # --- Display results if the quiz is complete ---
-    if st.session_state.show_results:
-        if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-            st.warning("it's almost like you already knew the questions...")
-            st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
-
-        with st.spinner('The Sorting Hat is deciding...'):
-            time.sleep(2)
-
-        score_dicts = [ans[1] for ans in st.session_state.answers]
-        counts = score_answers(score_dicts)
-        house, tied = determine_house(counts)
-
-        st.balloons()
-
-        st.write(f"### 🎉 {name}, you have been assigned to...")
-        st.write(f"### 🏰 {house}!")
-
-        df_scores = pd.DataFrame({
-            "House": HOUSES,
-            "Score": [counts.get(h, 0) for h in HOUSES]
-        })
-
-        house_colors = {
-            "Gryffindor": "#7F0909",
-            "Slytherin": "#1A472A",
-            "Ravenclaw": "#0E1A40",
-            "Hufflepuff": "#EEE117"
+    # Styled button
+    st.markdown(
+        """
+        <style>
+        div.stButton > button {
+            background: linear-gradient(135deg, #e8e0c4, #f8f4e5);
+            color: #3e2723;
+            border: 2px solid #5a4633;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-family: Georgia, serif;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
         }
-
-        base = alt.Chart(df_scores).encode(
-            theta=alt.Theta("Score", stack=True)
-        )
-
-        pie = base.mark_arc(outerRadius=120).encode(
-            color=alt.Color("House", scale=alt.Scale(domain=list(house_colors.keys()),
-                                                     range=list(house_colors.values()))),
-            order=alt.Order("Score", sort="descending"),
-            tooltip=["House", "Score"]
-        )
-
-        text = base.mark_text(radius=140).encode(
-            text="Score",
-            order=alt.Order("Score", sort="descending"),
-            color=alt.value("black")
-        )
-
-        chart = pie + text
-
-        st.altair_chart(chart)
-
-        st.image(f"https://raw.githubusercontent.com/your-username/hogwarts-images/main/{house.lower()}.png",
-                  caption=f"{house} Crest", width=250)
-
-
-        result = {
-            "name": name, 
-            "assigned_house": house, 
-            "gryffindor_score": counts.get("Gryffindor", 0),
-            "slytherin_score": counts.get("Slytherin", 0),
-            "ravenclaw_score": counts.get("Ravenclaw", 0),
-            "hufflepuff_score": counts.get("Hufflepuff", 0),
-            "timestamp": datetime.now()
+        div.stButton > button:hover {
+            background: #d7ccb0;
+            color: black;
         }
-        df_result = pd.DataFrame([result])
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-        df_result = pd.concat([results_df, df_result], ignore_index=True)
-        df_result.to_csv("results.csv", index=False)
-        st.session_state.show_results = False
-        st.session_state.q_index = 0
+    if st.button("Reveal My House"):
+        if len(answers) != len(QUESTIONS):
+            st.warning("Please answer all questions before revealing your house!")
+        else:
+            if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+                st.warning("it's almost like you already knew the questions...")
+                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
+            with st.spinner('The Sorting Hat is deciding...'):
+                time.sleep(2)
 
-# --- New Leaderboard & Stats Section ---
+            counts = score_answers(answers)
+            house, tied = determine_house(counts)
+
+            # Map houses to colors
+            house_colors = {
+                "Gryffindor": "#7F0909",
+                "Slytherin": "#1A472A",
+                "Ravenclaw": "#0E1A40",
+                "Hufflepuff": "#EEE117",
+                "Neutral": "#CD5C5C"
+            }
+
+            # Change background dynamically
+            bg_color = house_colors.get(house, "#CD5C5C")
+            st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-color: {bg_color};
+                    transition: background-color 1s;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
+            st.balloons()
+
+            # Results card
+            st.markdown(
+                f"""
+                <div style="
+                    background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                    border: 3px solid #5a4633;
+                    border-radius: 20px;
+                    padding: 20px;
+                    margin-top: 30px;
+                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                    text-align: center;
+                ">
+                    <h2 style="color:#3e2723; font-family: 'Georgia';">{name}, you have been assigned to...</h2>
+                    <h1 style="color:#3e2723; font-family: 'Georgia';">{house}!</h1>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            # Save result
+            result = {"name": name, "house": house, "timestamp": datetime.now()}
+            df_result = pd.DataFrame([result])
+            results_df = pd.concat([results_df, df_result], ignore_index=True)
+            results_df.to_csv("results.csv", index=False)
+
+            # Leaderboard
+            leaderboard_counts = results_df['house'].value_counts().to_dict()
+            leaderboard_text = "<h2>Leaderboard</h2>"
+            for h in HOUSES + ["Neutral"]:
+                leaderboard_text += f"<p style='font-size:18px;'>{h}: {leaderboard_counts.get(h,0)}</p>"
+            st.markdown(leaderboard_text, unsafe_allow_html=True)
+
+# Password-protected past results
 st.write("---")
-st.subheader("Leaderboard & House Standings")
-
-if not results_df.empty and "assigned_house" in results_df.columns:
-    
-    st.write("### The 'Most' of Each House")
-    for h in HOUSES:
-        score_col = f"{h.lower()}_score"
-        if score_col in results_df.columns and not results_df.empty:
-            max_score = results_df[score_col].max()
-            if max_score > 0:
-                top_users = results_df[results_df[score_col] == max_score]["name"].tolist()
-                top_users_str = ", ".join(top_users)
-                st.write(f"- **Most {h}:** {top_users_str} with {max_score} points")
-
-    st.write("---")
-    st.write("### Most Neutral Person")
-    # Calculate the standard deviation of scores for each person
-    results_df['score_std_dev'] = results_df[
-        ['gryffindor_score', 'slytherin_score', 'ravenclaw_score', 'hufflepuff_score']
-    ].std(axis=1)
-
-    # Find the row(s) with the minimum standard deviation
-    min_std_dev = results_df['score_std_dev'].min()
-    if pd.notna(min_std_dev):
-        most_neutral_person = results_df[results_df['score_std_dev'] == min_std_dev]['name'].tolist()
-        st.info(f"The most **neutral** person so far is **{', '.join(most_neutral_person)}** with a score deviation of **{min_std_dev:.2f}**.")
-    else:
-        st.warning("Not enough data to determine the most neutral person.")
-    
-    st.write("---")
-    st.write("### Total People Sorted")
-    house_counts = results_df['assigned_house'].value_counts().reindex(HOUSES, fill_value=0)
-    st.dataframe(house_counts.reset_index().rename(columns={'index': 'House', 'assigned_house': 'Total Members'}))
-
-else:
-    st.info("No one has been sorted yet! Be the first.")
-
-
-# --- Admin section (unchanged except for the dataframe display) ---
-st.write("---")
-if st.checkbox("Show past results (Admin)"):
+if st.checkbox("Show past results"):
     password_input = st.text_input(
         "Do you really think you can comprehend this knowledge? Then enter the magic word...",
         type="password"
     )
-
     try:
         correct_password = st.secrets["passwords"]["admin"]
     except KeyError:
@@ -361,7 +361,40 @@ if st.checkbox("Show past results (Admin)"):
         st.stop()
 
     if password_input == correct_password:
-        
+        try:
+            df_admin = pd.read_csv("results.csv")
+            st.dataframe(df_admin)
+            st.write("---")
+        except FileNotFoundError:
+            st.warning("No past results found yet.")
+
+        if st.button("Reset All Results"):
+            try:
+                os.remove("results.csv")
+                st.success("Results file has been reset.")
+                st.rerun()
+            except FileNotFoundError:
+                st.info("No results file to reset.")
+st.write("---")
+if st.checkbox("Show past results"):
+    password_input = st.text_input(
+        "Do you really think you can comprehend this knowledge? Then enter the magic word...",
+        type="password"
+    )
+    try:
+        correct_password = st.secrets["passwords"]["admin"]
+    except KeyError:
+        st.error("The admin password is not configured. Please add it to your secrets.toml file.")
+        st.stop()
+
+    if password_input == correct_password:
+        try:
+            df_admin = pd.read_csv("results.csv")
+            st.dataframe(df_admin)
+            st.write("---")
+        except FileNotFoundError:
+            st.warning("No past results found yet.")
+
         if st.button("Reset All Results"):
             try:
                 os.remove("results.csv")
