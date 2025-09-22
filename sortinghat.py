@@ -166,6 +166,14 @@ def is_name_similar(new_name, past_names, threshold=0.8):
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
 st.title("🧙‍♂️ SORTING HAT")
 
+# --- Initialize session state ---
+if "q_index" not in st.session_state:
+    st.session_state.q_index = 0
+if "answers" not in st.session_state:
+    st.session_state.answers = [None] * len(QUESTIONS)
+if "show_results" not in st.session_state:
+    st.session_state.show_results = False
+
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
@@ -174,91 +182,121 @@ except FileNotFoundError:
 name = st.text_input("What is your name?").strip()
 
 if name:
-    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values) or name in ["Kanishk", "Simran", "Aaradhya", "Aman", "Malini", "Sara", "Avani", "Aarav", "Parth", "Khanak", "Prakamya", "Raka", "Maanal", "Maan", "Pahul", "Shaurya", "Kavya", "Manvi", "Anand", "Kabir", "Kashvi", "Ridhima", "Aahana", "Yashvi", "Manaasve", "Navya", "Ryan", "Uma"]:
+    # Check for both exact and similar name matches
+    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
         st.warning("Have you completed this test in the past?")
         st.image("doakes.webp", caption="Interesting")
     
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
-    answers = []
-
-    for i, q in enumerate(QUESTIONS, 1):
-        st.subheader(f"Q{i}. {q['q']}")
-        choice = st.radio(
+    # --- Display a single question at a time ---
+    if not st.session_state.show_results:
+        q = QUESTIONS[st.session_state.q_index]
+        st.subheader(f"Q{st.session_state.q_index + 1}. {q['q']}")
+        
+        # Display the radio buttons for the current question
+        choice_text = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
-            key=f"q{i}",
-            index=None
+            key=f"q{st.session_state.q_index}",
+            index=[opt[0] for opt in q["opts"]].index(st.session_state.answers[st.session_state.q_index][0])
+            if st.session_state.answers[st.session_state.q_index] is not None else None
         )
         
-        if choice:
-            for text, score_dict in q["opts"]:
-                if text == choice:
-                    answers.append(score_dict)
+        # Find the full option dictionary from the choice
+        selected_option = next((opt[1] for opt in q["opts"] if opt[0] == choice_text), None)
+        st.session_state.answers[st.session_state.q_index] = (choice_text, selected_option)
+        
         st.write("---")
 
-    if st.button("Reveal My House"):
-        if len(answers) != len(QUESTIONS):
-            st.warning("Please answer all questions before revealing your house!")
-        else:
-            if name in results_df['name'].values:
-                st.warning("it's almost like you already knew the questions...")
-                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+        col1, col2 = st.columns(2)
 
-            with st.spinner('The Sorting Hat is deciding...'):
-                time.sleep(2) # Simulates a thinking process
+        with col1:
+            if st.session_state.q_index > 0:
+                if st.button("Previous"):
+                    st.session_state.q_index -= 1
+                    st.rerun()
 
-            counts = score_answers(answers)
-            house, tied = determine_house(counts)
+        with col2:
+            # Check if all questions are answered
+            all_questions_answered = all(answer is not None for answer in st.session_state.answers)
+            
+            if st.session_state.q_index < len(QUESTIONS) - 1:
+                if st.button("Next", disabled=selected_option is None):
+                    st.session_state.q_index += 1
+                    st.rerun()
+            else: # On the last question
+                button_text = "Reveal My House"
+                if not all_questions_answered:
+                    button_text = "Please answer all questions to proceed!"
+                
+                if st.button(button_text, disabled=not all_questions_answered):
+                    st.session_state.show_results = True
+                    st.rerun()
+    
+    # --- Display results if the quiz is complete ---
+    if st.session_state.show_results:
+        # Check if they have taken the test before
+        if name in results_df['name'].values:
+            st.warning("it's almost like you already knew the questions...")
+            st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-            st.balloons()
+        with st.spinner('The Sorting Hat is deciding...'):
+            time.sleep(2) # Simulates a thinking process
 
-            st.write(f"###  {name}, you have been assigned to...")
-            st.write(f"###  {house}!")
+        # The answers stored in session state are a list of tuples (choice_text, score_dict)
+        # We need to extract just the score dictionaries for scoring.
+        score_dicts = [ans[1] for ans in st.session_state.answers]
+        counts = score_answers(score_dicts)
+        house, tied = determine_house(counts)
 
-            df_scores = pd.DataFrame({
-                "House": HOUSES,
-                "Score": [counts.get(h, 0) for h in HOUSES]
-            })
+        st.balloons()
 
-            house_colors = {
-                "Gryffindor": "#7F0909",
-                "Slytherin": "#1A472A",
-                "Ravenclaw": "#0E1A40",
-                "Hufflepuff": "#EEE117"
-            }
+        st.write(f"### 🎉 {name}, you have been assigned to...")
+        st.write(f"### 🏰 {house}!")
 
-            base = alt.Chart(df_scores).encode(
-                theta=alt.Theta("Score", stack=True)
-            )
+        df_scores = pd.DataFrame({
+            "House": HOUSES,
+            "Score": [counts.get(h, 0) for h in HOUSES]
+        })
 
-            pie = base.mark_arc(outerRadius=120).encode(
-                color=alt.Color("House", scale=alt.Scale(domain=list(house_colors.keys()),
-                                                         range=list(house_colors.values()))),
-                order=alt.Order("Score", sort="descending"),
-                tooltip=["House", "Score"]
-            )
+        house_colors = {
+            "Gryffindor": "#7F0909",
+            "Slytherin": "#1A472A",
+            "Ravenclaw": "#0E1A40",
+            "Hufflepuff": "#EEE117"
+        }
 
-            text = base.mark_text(radius=140).encode(
-                text="Score",
-                order=alt.Order("Score", sort="descending"),
-                color=alt.value("black")
-            )
+        base = alt.Chart(df_scores).encode(
+            theta=alt.Theta("Score", stack=True)
+        )
 
-            chart = pie + text
+        pie = base.mark_arc(outerRadius=120).encode(
+            color=alt.Color("House", scale=alt.Scale(domain=list(house_colors.keys()),
+                                                     range=list(house_colors.values()))),
+            order=alt.Order("Score", sort="descending"),
+            tooltip=["House", "Score"]
+        )
 
-            st.altair_chart(chart)
+        text = base.mark_text(radius=140).encode(
+            text="Score",
+            order=alt.Order("Score", sort="descending"),
+            color=alt.value("black")
+        )
 
-            st.image(f"https://raw.githubusercontent.com/your-username/hogwarts-images/main/{house.lower()}.png",
-                      caption=f"{house} Crest", width=250)
+        chart = pie + text
+
+        st.altair_chart(chart)
+
+        st.image(f"https://raw.githubusercontent.com/your-username/hogwarts-images/main/{house.lower()}.png",
+                  caption=f"{house} Crest", width=250)
 
 
-            result = {"name": name, "house": house, "timestamp": datetime.now()}
-            df_result = pd.DataFrame([result])
+        result = {"name": name, "house": house, "timestamp": datetime.now()}
+        df_result = pd.DataFrame([result])
 
-            df_result = pd.concat([results_df, df_result], ignore_index=True)
-            df_result.to_csv("results.csv", index=False)
-
+        df_result = pd.concat([results_df, df_result], ignore_index=True)
+        df_result.to_csv("results.csv", index=False)
 
 st.write("---")
 if st.checkbox("Show past results"):
