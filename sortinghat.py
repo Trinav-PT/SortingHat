@@ -475,7 +475,6 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # --- The main fix ---
             # Create a dataframe for the user's personal points
             df_scores_chart = pd.DataFrame({
                 "House": counts.keys(),
@@ -527,89 +526,12 @@ if name:
             )
             
             st.altair_chart(bar_chart, use_container_width=True)
-            
-            # --- End of fix ---
-            
+
             # Reload the results dataframe to get the most current data for the public leaderboard
             try:
                 fresh_results_df = pd.read_csv("results.csv")
             except FileNotFoundError:
                 fresh_results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
-
-            # Show house distribution chart with the fresh data
-            updated_house_counts = fresh_results_df['house'].value_counts().to_dict()
-        
-            st.markdown(
-                """
-                <div style="
-                    background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
-                    border: 3px solid #5a4633;
-                    border-radius: 20px;
-                    padding: 20px;
-                    margin-top: 30px;
-                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
-                    text-align: center;
-                ">
-                    <h2 style="color:#3e2723; font-family: 'Georgia';">House Distribution</h2>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            
-            # Create Altair chart with proper colors
-            chart_data = pd.DataFrame({
-                'House': list(updated_house_counts.keys()),
-                'Members': list(updated_house_counts.values())
-            })
-            
-            # Create colored bar chart using Altair
-            bar_chart = alt.Chart(chart_data).mark_bar().encode(
-                x=alt.X('House:N', sort=None),
-                y=alt.Y('Members:Q'),
-                color=alt.Color(
-                    'House:N',
-                    scale=alt.Scale(
-                        domain=list(house_color_map.keys()),
-                        range=list(house_color_map.values())
-                    ),
-                    legend=None
-                ),
-                tooltip=['House', 'Members']
-            ).properties(
-                width=500,
-                height=300,
-                title="House Distribution"
-            )
-            
-            st.altair_chart(bar_chart, use_container_width=True)
-
-            # Also show the numbers
-            st.markdown("<h3 style='color:#3e2723; font-family: Georgia; text-align: center;'>Current Standings:</h3>", unsafe_allow_html=True)
-            
-            # Display as colored boxes
-            cols = st.columns(len(HOUSES))
-            
-            for i, house in enumerate(HOUSES):
-                count = updated_house_counts.get(house, 0)
-                with cols[i]:
-                    st.markdown(
-                        f"""
-                        <div style="
-                            background-color: {house_color_map[house]};
-                            color: white;
-                            padding: 20px;
-                            border-radius: 15px;
-                            text-align: center;
-                            margin: 5px;
-                            box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
-                        ">
-                            <h3 style="margin: 0; font-family: Georgia;">{house}</h3>
-                            <h2 style="margin: 5px 0 0 0; font-family: Georgia;">{count}</h2>
-                            <p style="margin: 0; font-size: 14px;">members</p>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
 
 # Password-protected past results
 st.write("---")
