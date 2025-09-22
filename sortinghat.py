@@ -474,10 +474,7 @@ if name:
                 )
                 
                 # Create chart data in the format Streamlit expects
-                chart_data = pd.DataFrame({
-                    'House': list(house_counts.keys()),
-                    'Members': list(house_counts.values())
-                })
+                house_counts = results_df['house'].value_counts().to_dict()
                 
                 # Define house colors for the bar chart
                 house_color_map = {
@@ -487,14 +484,32 @@ if name:
                     "Hufflepuff": "#FFD700"
                 }
                 
-                # Create the bar chart with house colors
-                chart_data_indexed = chart_data.set_index('House')
+                # Create Altair chart with proper colors
+                chart_data = pd.DataFrame({
+                    'House': list(house_counts.keys()),
+                    'Members': list(house_counts.values())
+                })
                 
-                # Create color list in the same order as the data
-                colors = [house_color_map.get(house, "#CD5C5C") for house in chart_data_indexed.index]
+                # Create colored bar chart using Altair
+                bar_chart = alt.Chart(chart_data).mark_bar().encode(
+                    x=alt.X('House:N', sort=None),
+                    y=alt.Y('Members:Q'),
+                    color=alt.Color(
+                        'House:N',
+                        scale=alt.Scale(
+                            domain=list(house_color_map.keys()),
+                            range=list(house_color_map.values())
+                        ),
+                        legend=None
+                    ),
+                    tooltip=['House', 'Members']
+                ).properties(
+                    width=500,
+                    height=300,
+                    title="House Distribution"
+                )
                 
-                # Use Streamlit's built-in bar chart with colors
-                st.bar_chart(chart_data_indexed, color=colors)
+                st.altair_chart(bar_chart, use_container_width=True)
                 
                 # Also show the numbers
                 st.markdown("<h3 style='color:#3e2723; font-family: Georgia; text-align: center;'>Current Standings:</h3>", unsafe_allow_html=True)
