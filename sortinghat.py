@@ -174,7 +174,7 @@ except FileNotFoundError:
 name = st.text_input("What is your name?").strip()
 
 if name:
-    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values) or name in ["Kanishk", "Aman", "Malini", "Sara", "Avani", "Aarav", "Parth", "Khanak", "Prakamya", "Raka", "Maanal", "Maan", "Pahul", "Shaurya", "Kavya", "Manvi", "Anand", "Kabir", "Kashvi", "Ridhima", "Aahana", "Yashvi", "Manaasve", "Navya", "Ryan", "Uma"]:
         st.warning("Have you completed this test in the past?")
         st.image("doakes.webp", caption="Interesting")
     
@@ -213,8 +213,8 @@ if name:
 
             st.balloons()
 
-            st.write(f"### 🎉 {name}, you have been assigned to...")
-            st.write(f"### 🏰 {house}!")
+            st.write(f"###  {name}, you have been assigned to...")
+            st.write(f"###  {house}!")
 
             df_scores = pd.DataFrame({
                 "House": HOUSES,
