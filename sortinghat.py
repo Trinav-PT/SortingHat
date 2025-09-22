@@ -174,17 +174,30 @@ except FileNotFoundError:
 name = st.text_input("What is your name?").strip()
 
 if name:
-    # Check for both exact and similar name matches
-    # if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-    #     st.warning("Have you completed this test in the past?")
-    #     st.image("doakes.webp", caption="Interesting")
-    
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
     answers = []
 
     for i, q in enumerate(QUESTIONS, 1):
-        st.subheader(f"Q{i}. {q['q']}")
+        # Styled parchment-like question card
+        st.markdown(
+            f"""
+            <div style="
+                background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                border: 2px solid #5a4633;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+            ">
+                <h3 style="color:#3e2723; font-family: 'Georgia';">
+                    Q{i}. {q['q']}
+                </h3>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
         choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
@@ -258,35 +271,4 @@ if name:
             df_result = pd.DataFrame([result])
 
             df_result = pd.concat([results_df, df_result], ignore_index=True)
-            df_result.to_csv("results.csv", index=False)
-
-
-st.write("---")
-if st.checkbox("Show past results"):
-    password_input = st.text_input(
-        "Do you really think you can comprehend this knowledge? Then enter the magic word...",
-        type="password"
-    )
-
-    # Accessing password from secrets.toml for security
-    try:
-        correct_password = st.secrets["passwords"]["admin"]
-    except KeyError:
-        st.error("The admin password is not configured. Please add it to your secrets.toml file.")
-        st.stop()
-
-    if password_input == correct_password:
-        try:
-            df_admin = pd.read_csv("results.csv")
-            st.dataframe(df_admin)
-            st.write("---")
-        except FileNotFoundError:
-            st.warning("No past results found yet.")
-        
-        if st.button("Reset All Results"):
-            try:
-                os.remove("results.csv")
-                st.success("Results file has been reset.")
-                st.rerun()
-            except FileNotFoundError:
-                st.info("No results file to reset.")
+            df
