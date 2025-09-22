@@ -230,6 +230,8 @@ if 'house_revealed' not in st.session_state:
     st.session_state.house_revealed = False
 if 'balloons_shown' not in st.session_state:
     st.session_state.balloons_shown = False
+if 'name_check_done' not in st.session_state:
+    st.session_state.name_check_done = False
 
 # Global background (default maroon)
 st.markdown(
@@ -395,6 +397,11 @@ if name:
             if len(answers) != len(QUESTIONS):
                 st.warning("Please answer all questions before revealing your house!")
             else:
+                # NEW LOGIC: Check for duplicate name ONLY WHEN the button is pressed
+                if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+                    st.warning("it's almost like you already knew the questions...")
+                    st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+
                 # Set the flags to show results
                 st.session_state.house_revealed = True
                 st.rerun()  # Refresh to show results
@@ -412,11 +419,6 @@ if name:
                         break
         
         if len(current_answers) == len(QUESTIONS):
-            # Check for duplicate name warning
-            if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-                st.warning("it's almost like you already knew the questions...")
-                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
-
             with st.spinner('The Sorting Hat is deciding...'):
                 time.sleep(2)
 
@@ -470,7 +472,7 @@ if name:
                     border-radius: 20px;
                     padding: 20px;
                     margin-top: 30px;
-                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                    box-shadow: 6px 66px 12px rgba(0,0,0,0.25);
                     text-align: center;
                 ">
                     <h2 style="color:#3e2723; font-family: 'Georgia';">{name}, you have been assigned to...</h2>
