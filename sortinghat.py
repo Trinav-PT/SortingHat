@@ -326,9 +326,9 @@ name = st.text_input("", key="name_input").strip()
 if name:
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
-    # Initialize reset flag in session state
-    if 'quiz_reset' not in st.session_state:
-        st.session_state.quiz_reset = False
+    # Initialize house reveal state
+    if 'house_revealed' not in st.session_state:
+        st.session_state.house_revealed = False
     
     answers = []
 
@@ -351,14 +351,11 @@ if name:
             unsafe_allow_html=True
         )
 
-        # Use the reset flag to control the default index
-        default_index = None if not st.session_state.quiz_reset else None
-        
         choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
-            key=f"q{i}_{st.session_state.get('reset_counter', 0)}",  # Add counter to key to force reset
-            index=default_index
+            key=f"q{i}",
+            index=None
         )
         
         if choice:
@@ -390,19 +387,27 @@ if name:
         unsafe_allow_html=True
     )
 
-    if st.button("Reveal My House"):
-        if len(answers) != len(QUESTIONS):
-            st.warning("Please answer all questions before revealing your house!")
-        else:
-            if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-                st.warning("it's almost like you already knew the questions...")
-                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+    # Only show the button if house hasn't been revealed yet
+    if not st.session_state.house_revealed:
+        if st.button("Reveal My House"):
+            if len(answers) != len(QUESTIONS):
+                st.warning("Please answer all questions before revealing your house!")
+            else:
+                # Set the flag to hide the button
+                st.session_state.house_revealed = True
+                st.rerun()  # Refresh to hide the button and show results
 
-            with st.spinner('The Sorting Hat is deciding...'):
-                time.sleep(2)
+    # Show results if house has been revealed
+    if st.session_state.house_revealed and len(answers) == len(QUESTIONS):
+        if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+            st.warning("it's almost like you already knew the questions...")
+            st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-            counts = score_answers(answers)
-            house, tied = determine_house(counts)
+        with st.spinner('The Sorting Hat is deciding...'):
+            time.sleep(2)
+
+        counts = score_answers(answers)
+        house, tied = determine_house(counts)
             
             # Reset the quiz by incrementing the counter to change all radio button keys
             if 'reset_counter' not in st.session_state:
