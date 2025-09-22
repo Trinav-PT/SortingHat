@@ -447,6 +447,70 @@ if name:
             results_df = pd.concat([results_df, df_result], ignore_index=True)
             results_df.to_csv("results.csv", index=False)
 
+            # Show pie chart of house distribution
+            if len(results_df) > 0:
+                house_counts = results_df['house'].value_counts().to_dict()
+                
+                st.markdown(
+                    """
+                    <div style="
+                        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                        border: 3px solid #5a4633;
+                        border-radius: 20px;
+                        padding: 20px;
+                        margin-top: 30px;
+                        box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                        text-align: center;
+                    ">
+                        <h2 style="color:#3e2723; font-family: 'Georgia';">House Distribution</h2>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                
+                # Create chart data in the format Streamlit expects
+                chart_data = pd.DataFrame({
+                    'House': list(house_counts.keys()),
+                    'Members': list(house_counts.values())
+                })
+                
+                # Use Streamlit's built-in pie chart
+                st.bar_chart(chart_data.set_index('House'))
+                
+                # Also show the numbers
+                st.markdown("<h3 style='color:#3e2723; font-family: Georgia; text-align: center;'>Current Standings:</h3>", unsafe_allow_html=True)
+                
+                # Display as colored boxes
+                cols = st.columns(len(HOUSES))
+                house_colors = {
+                    "Gryffindor": "#7F0909",
+                    "Slytherin": "#1A472A", 
+                    "Ravenclaw": "#0E1A40",
+                    "Hufflepuff": "#FFD700"
+                }
+                
+                for i, house in enumerate(HOUSES):
+                    count = house_counts.get(house, 0)
+                    with cols[i]:
+                        st.markdown(
+                            f"""
+                            <div style="
+                                background-color: {house_colors[house]};
+                                color: white;
+                                padding: 20px;
+                                border-radius: 15px;
+                                text-align: center;
+                                margin: 5px;
+                                box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+                            ">
+                                <h3 style="margin: 0; font-family: Georgia;">{house}</h3>
+                                <h2 style="margin: 5px 0 0 0; font-family: Georgia;">{count}</h2>
+                                <p style="margin: 0; font-size: 14px;">members</p>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
 # Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
