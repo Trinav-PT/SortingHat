@@ -169,7 +169,7 @@ st.markdown(
     <style>
     /* Global background */
     .stApp {
-        background-color: #B22222;  /* maroon-ish */
+        background-color: #CD5C5C;  /* maroon-ish */
     }
     </style>
     """,
