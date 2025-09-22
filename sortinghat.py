@@ -5,6 +5,7 @@ from collections import Counter
 import random
 from datetime import datetime
 import os
+import difflib
 
 
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
@@ -152,6 +153,14 @@ def determine_house(counts):
         return top[0], top
     return random.choice(top), top
 
+def is_name_similar(new_name, past_names, threshold=0.8):
+    """Checks if a new name is similar to any name in a list of past names."""
+    for past_name in past_names:
+        similarity = difflib.SequenceMatcher(None, new_name.lower(), past_name.lower()).ratio()
+        if similarity >= threshold:
+            return True
+    return False
+
 
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
 st.title("🧙‍♂️ SORTING HAT")
@@ -164,10 +173,10 @@ except FileNotFoundError:
 name = st.text_input("What is your name?").strip()
 
 if name:
-    if name in results_df['name'].values:
+    # Check for both exact and similar name matches
+    if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
         st.warning("Have you completed this test in the past?")
         st.image("doakes.webp", caption="Interesting")
-        #st.stop()
     
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
@@ -241,8 +250,7 @@ if st.checkbox("Show past results"):
         type="password"
     )
 
-    # Get the real password from secrets
-    correct_password = st.secrets["passwords"]["admin"]
+    correct_password = "GARAWA" # As per your original code
 
     if password_input == correct_password:
         try:
@@ -259,4 +267,3 @@ if st.checkbox("Show past results"):
                 st.rerun()
             except FileNotFoundError:
                 st.info("No results file to reset.")
-
