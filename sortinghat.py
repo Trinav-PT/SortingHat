@@ -375,30 +375,3 @@ if st.checkbox("Show past results"):
                 st.rerun()
             except FileNotFoundError:
                 st.info("No results file to reset.")
-st.write("---")
-if st.checkbox("Show past results"):
-    password_input = st.text_input(
-        "Do you really think you can comprehend this knowledge? Then enter the magic word...",
-        type="password"
-    )
-    try:
-        correct_password = st.secrets["passwords"]["admin"]
-    except KeyError:
-        st.error("The admin password is not configured. Please add it to your secrets.toml file.")
-        st.stop()
-
-    if password_input == correct_password:
-        try:
-            df_admin = pd.read_csv("results.csv")
-            st.dataframe(df_admin)
-            st.write("---")
-        except FileNotFoundError:
-            st.warning("No past results found yet.")
-
-        if st.button("Reset All Results"):
-            try:
-                os.remove("results.csv")
-                st.success("Results file has been reset.")
-                st.rerun()
-            except FileNotFoundError:
-                st.info("No results file to reset.")
