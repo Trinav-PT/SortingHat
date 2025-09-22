@@ -6,6 +6,7 @@ import random
 from datetime import datetime
 import os
 import difflib
+import time
 
 
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
@@ -173,7 +174,6 @@ except FileNotFoundError:
 name = st.text_input("What is your name?").strip()
 
 if name:
-    # Check for both exact and similar name matches
     if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
         st.warning("Have you completed this test in the past?")
         st.image("doakes.webp", caption="Interesting")
@@ -205,8 +205,13 @@ if name:
                 st.warning("it's almost like you already knew the questions...")
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
+            with st.spinner('The Sorting Hat is deciding...'):
+                time.sleep(2) # Simulates a thinking process
+
             counts = score_answers(answers)
             house, tied = determine_house(counts)
+
+            st.balloons()
 
             st.write(f"### 🎉 {name}, you have been assigned to...")
             st.write(f"### 🏰 {house}!")
@@ -223,12 +228,24 @@ if name:
                 "Hufflepuff": "#EEE117"
             }
 
-            chart = alt.Chart(df_scores).mark_bar().encode(
-                x=alt.X("House", sort=HOUSES),
-                y="Score",
+            base = alt.Chart(df_scores).encode(
+                theta=alt.Theta("Score", stack=True)
+            )
+
+            pie = base.mark_arc(outerRadius=120).encode(
                 color=alt.Color("House", scale=alt.Scale(domain=list(house_colors.keys()),
-                                                         range=list(house_colors.values())))
-            ).properties(width=500, height=300)
+                                                         range=list(house_colors.values()))),
+                order=alt.Order("Score", sort="descending"),
+                tooltip=["House", "Score"]
+            )
+
+            text = base.mark_text(radius=140).encode(
+                text="Score",
+                order=alt.Order("Score", sort="descending"),
+                color=alt.value("black")
+            )
+
+            chart = pie + text
 
             st.altair_chart(chart)
 
@@ -250,7 +267,11 @@ if st.checkbox("Show past results"):
         type="password"
     )
 
-    correct_password = "GARAWA" # As per your original code
+    try:
+        correct_password = st.secrets["passwords"]["admin"]
+    except KeyError:
+        st.error("The admin password is not configured. Please add it to your secrets.toml file.")
+        st.stop()
 
     if password_input == correct_password:
         try:
