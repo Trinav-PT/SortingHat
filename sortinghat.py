@@ -326,6 +326,10 @@ name = st.text_input("", key="name_input").strip()
 if name:
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
+    # Initialize reset flag in session state
+    if 'quiz_reset' not in st.session_state:
+        st.session_state.quiz_reset = False
+    
     answers = []
 
     for i, q in enumerate(QUESTIONS, 1):
@@ -347,11 +351,14 @@ if name:
             unsafe_allow_html=True
         )
 
+        # Use the reset flag to control the default index
+        default_index = None if not st.session_state.quiz_reset else None
+        
         choice = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
-            key=f"q{i}",
-            index=None
+            key=f"q{i}_{st.session_state.get('reset_counter', 0)}",  # Add counter to key to force reset
+            index=default_index
         )
         
         if choice:
@@ -397,10 +404,11 @@ if name:
             counts = score_answers(answers)
             house, tied = determine_house(counts)
             
-            # Clear all radio button selections after revealing house
-            for i in range(1, len(QUESTIONS) + 1):
-                if f"q{i}" in st.session_state:
-                    del st.session_state[f"q{i}"]
+            # Reset the quiz by incrementing the counter to change all radio button keys
+            if 'reset_counter' not in st.session_state:
+                st.session_state.reset_counter = 0
+            st.session_state.reset_counter += 1
+            st.session_state.quiz_reset = True
 
             # Map houses to colors
             house_colors = {
