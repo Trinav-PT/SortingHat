@@ -165,7 +165,7 @@ st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
 # --- Global background ---
 st.markdown("""
 <style>
-.stApp { background-color: #800000; } /* maroon */
+.stApp { background-color: #CD5C5C; } /* maroon */
 </style>
 """, unsafe_allow_html=True)
 
