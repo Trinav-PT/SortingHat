@@ -398,69 +398,97 @@ if name:
                 st.rerun()  # Refresh to hide the button and show results
 
     # Show results if house has been revealed
-    if st.session_state.house_revealed and len(answers) == len(QUESTIONS):
-        if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
-            st.warning("it's almost like you already knew the questions...")
-            st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+    if st.session_state.house_revealed:
+        # Recalculate answers from current radio button states
+        current_answers = []
+        for i, q in enumerate(QUESTIONS, 1):
+            if f"q{i}" in st.session_state and st.session_state[f"q{i}"] is not None:
+                choice = st.session_state[f"q{i}"]
+                for text, score_dict in q["opts"]:
+                    if text == choice:
+                        current_answers.append(score_dict)
+                        break
+        
+        if len(current_answers) == len(QUESTIONS):
+            # Only show the warning and process if we haven't already saved this result
+            if name not in results_df['name'].values and not is_name_similar(name, results_df['name'].values):
+                if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+                    st.warning("it's almost like you already knew the questions...")
+                    st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-        with st.spinner('The Sorting Hat is deciding...'):
-            time.sleep(2)
+                with st.spinner('The Sorting Hat is deciding...'):
+                    time.sleep(2)
 
-        counts = score_answers(answers)
-        house, tied = determine_house(counts)
+                counts = score_answers(current_answers)
+                house, tied = determine_house(counts)
 
-        # Map houses to colors
-        house_colors = {
-            "Gryffindor": "#7F0909",
-            "Slytherin": "#1A472A",
-            "Ravenclaw": "#0E1A40",
-            "Hufflepuff": "#EEE117",
-            "Neutral": "#CD5C5C"
-        }
+                # Save result first
+                result = {"name": name, "house": house, "timestamp": datetime.now()}
+                df_result = pd.DataFrame([result])
+                results_df = pd.concat([results_df, df_result], ignore_index=True)
+                results_df.to_csv("results.csv", index=False)
+            else:
+                # User already exists, get their house from the dataframe
+                existing_user = results_df[results_df['name'] == name]
+                if len(existing_user) > 0:
+                    house = existing_user.iloc[0]['house']
+                else:
+                    # Fallback calculation
+                    counts = score_answers(current_answers)
+                    house, tied = determine_house(counts)
 
-        # Change background dynamically
-        bg_color = house_colors.get(house, "#CD5C5C")
-        st.markdown(
-            f"""
-            <style>
-            .stApp {{
-                background-color: {bg_color};
-                transition: background-color 1s;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+            # Map houses to colors
+            house_colors = {
+                "Gryffindor": "#7F0909",
+                "Slytherin": "#1A472A",
+                "Ravenclaw": "#0E1A40",
+                "Hufflepuff": "#EEE117",
+                "Neutral": "#CD5C5C"
+            }
 
-        st.balloons()
+            # Change background dynamically
+            bg_color = house_colors.get(house, "#CD5C5C")
+            st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-color: {bg_color};
+                    transition: background-color 1s;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
 
-        # Results card
-        st.markdown(
-            f"""
-            <div style="
-                background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
-                border: 3px solid #5a4633;
-                border-radius: 20px;
-                padding: 20px;
-                margin-top: 30px;
-                box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
-                text-align: center;
-            ">
-                <h2 style="color:#3e2723; font-family: 'Georgia';">{name}, you have been assigned to...</h2>
-                <h1 style="color:#3e2723; font-family: 'Georgia';">{house}!</h1>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            st.balloons()
 
-        # Save result
-        result = {"name": name, "house": house, "timestamp": datetime.now()}
-        df_result = pd.DataFrame([result])
-        results_df = pd.concat([results_df, df_result], ignore_index=True)
-        results_df.to_csv("results.csv", index=False)
+            # Results card
+            st.markdown(
+                f"""
+                <div style="
+                    background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                    border: 3px solid #5a4633;
+                    border-radius: 20px;
+                    padding: 20px;
+                    margin-top: 30px;
+                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                    text-align: center;
+                ">
+                    <h2 style="color:#3e2723; font-family: 'Georgia';">{name}, you have been assigned to...</h2>
+                    <h1 style="color:#3e2723; font-family: 'Georgia';">{house}!</h1>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-        # Show house distribution chart with updated data
-        updated_house_counts = results_df['house'].value_counts().to_dict()
+            # Reload the results dataframe to get the most current data
+            try:
+                results_df = pd.read_csv("results.csv")
+            except FileNotFoundError:
+                results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
+
+            # Show house distribution chart with updated data
+            updated_house_counts = results_df['house'].value_counts().to_dict()
         
         st.markdown(
             """
