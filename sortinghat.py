@@ -493,7 +493,7 @@ if name:
                     box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
                     text-align: center;
                 ">
-                    <h2 style="color:#3e2723; font-family: 'Georgia';">Your Point Distribution</h2>
+                    <h2 style="color:#3e2723; font-family: 'Georgia';">Your Points Distribution</h2>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -507,25 +507,22 @@ if name:
                 "Hufflepuff": "#FFD700"
             }
             
-            bar_chart = alt.Chart(df_scores_chart).mark_bar().encode(
-                x=alt.X('House:N', sort=None),
-                y=alt.Y('Points:Q'),
+            pie_chart = alt.Chart(df_scores_chart).mark_arc(outerRadius=120).encode(
+                theta=alt.Theta("Points:Q", stack=True),
                 color=alt.Color(
-                    'House:N',
+                    "House:N",
                     scale=alt.Scale(
                         domain=list(house_color_map.keys()),
                         range=list(house_color_map.values())
                     ),
                     legend=None
                 ),
-                tooltip=['House', 'Points']
+                tooltip=["House", "Points"]
             ).properties(
-                width=500,
-                height=300,
-                title="Your House Points"
+                title="Your Personal House Points Distribution"
             )
             
-            st.altair_chart(bar_chart, use_container_width=True)
+            st.altair_chart(pie_chart, use_container_width=True)
 
             # Reload the results dataframe to get the most current data for the public leaderboard
             try:
