@@ -326,9 +326,10 @@ name = st.text_input("", key="name_input").strip()
 if name:
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
-    # Initialize house reveal state
+    # Initialize house and balloon states
     if 'house_revealed' not in st.session_state:
         st.session_state.house_revealed = False
+        st.session_state.balloons_shown = False
     
     answers = []
 
@@ -393,9 +394,9 @@ if name:
             if len(answers) != len(QUESTIONS):
                 st.warning("Please answer all questions before revealing your house!")
             else:
-                # Set the flag to hide the button
+                # Set the flags to show results
                 st.session_state.house_revealed = True
-                st.rerun()  # Refresh to hide the button and show results
+                st.rerun()  # Refresh to show results
 
     # Show results if house has been revealed
     if st.session_state.house_revealed:
@@ -417,6 +418,11 @@ if name:
 
             with st.spinner('The Sorting Hat is deciding...'):
                 time.sleep(2)
+
+            # Only show balloons the first time the house is revealed
+            if not st.session_state.balloons_shown:
+                st.balloons()
+                st.session_state.balloons_shown = True
 
             # Calculate the house
             counts = score_answers(current_answers)
@@ -453,9 +459,7 @@ if name:
                 """,
                 unsafe_allow_html=True
             )
-
-            st.balloons()
-
+            
             # Results card
             st.markdown(
                 f"""
@@ -493,7 +497,7 @@ if name:
                     box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
                     text-align: center;
                 ">
-                    <h2 style="color:#3e2723; font-family: 'Georgia';">Your Points Distribution</h2>
+                    <h2 style="color:#3e2723; font-family: 'Georgia';">Your Point Distribution</h2>
                 </div>
                 """,
                 unsafe_allow_html=True
