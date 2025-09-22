@@ -396,6 +396,11 @@ if name:
 
             counts = score_answers(answers)
             house, tied = determine_house(counts)
+            
+            # Clear all radio button selections after revealing house
+            for i in range(1, len(QUESTIONS) + 1):
+                if f"q{i}" in st.session_state:
+                    del st.session_state[f"q{i}"]
 
             # Map houses to colors
             house_colors = {
@@ -474,8 +479,22 @@ if name:
                     'Members': list(house_counts.values())
                 })
                 
-                # Use Streamlit's built-in pie chart
-                st.bar_chart(chart_data.set_index('House'))
+                # Define house colors for the bar chart
+                house_color_map = {
+                    "Gryffindor": "#7F0909",
+                    "Slytherin": "#1A472A", 
+                    "Ravenclaw": "#0E1A40",
+                    "Hufflepuff": "#FFD700"
+                }
+                
+                # Create the bar chart with house colors
+                chart_data_indexed = chart_data.set_index('House')
+                
+                # Create color list in the same order as the data
+                colors = [house_color_map.get(house, "#CD5C5C") for house in chart_data_indexed.index]
+                
+                # Use Streamlit's built-in bar chart with colors
+                st.bar_chart(chart_data_indexed, color=colors)
                 
                 # Also show the numbers
                 st.markdown("<h3 style='color:#3e2723; font-family: Georgia; text-align: center;'>Current Standings:</h3>", unsafe_allow_html=True)
