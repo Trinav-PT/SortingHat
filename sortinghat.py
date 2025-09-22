@@ -499,7 +499,7 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # Define house colors for the bar chart
+            # Define house colors for the pie chart
             house_color_map = {
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
@@ -507,7 +507,11 @@ if name:
                 "Hufflepuff": "#FFD700"
             }
             
-            pie_chart = alt.Chart(df_scores_chart).mark_arc(outerRadius=120).encode(
+            # Calculate percentages
+            total_points = df_scores_chart['Points'].sum()
+            df_scores_chart['Percentage'] = (df_scores_chart['Points'] / total_points) * 100
+            
+            base_chart = alt.Chart(df_scores_chart).encode(
                 theta=alt.Theta("Points:Q", stack=True),
                 color=alt.Color(
                     "House:N",
@@ -518,11 +522,23 @@ if name:
                     legend=None
                 ),
                 tooltip=["House", "Points"]
-            ).properties(
-                title="Your Personal House Points Distribution"
             )
             
-            st.altair_chart(pie_chart, use_container_width=True)
+            pie = base_chart.mark_arc(outerRadius=120).encode(
+                tooltip=["House", "Points", alt.Tooltip("Percentage", format=".1f", title="Percentage")]
+            )
+            
+            text = base_chart.mark_text(radius=140).encode(
+                text=alt.Text("Percentage", format=".1f"),
+                order=alt.Order("Points", sort="descending"),
+                color=alt.value("black")
+            )
+            
+            combined_chart = (pie + text).properties(
+                title="Your Personal House Points Distribution"
+            ).interactive()
+            
+            st.altair_chart(combined_chart, use_container_width=True)
 
             # Reload the results dataframe to get the most current data for the public leaderboard
             try:
