@@ -225,6 +225,12 @@ def calculate_user_house_scores(results_df):
 # --- Streamlit page setup ---
 st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
 
+# Initialize session state variables at the very beginning of the script
+if 'house_revealed' not in st.session_state:
+    st.session_state.house_revealed = False
+if 'balloons_shown' not in st.session_state:
+    st.session_state.balloons_shown = False
+
 # Global background (default maroon)
 st.markdown(
     """
@@ -325,11 +331,6 @@ name = st.text_input("", key="name_input").strip()
 
 if name:
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
-    
-    # Initialize house and balloon states
-    if 'house_revealed' not in st.session_state:
-        st.session_state.house_revealed = False
-        st.session_state.balloons_shown = False
     
     answers = []
 
