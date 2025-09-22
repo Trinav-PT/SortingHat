@@ -195,12 +195,15 @@ if name:
         st.subheader(f"Q{st.session_state.q_index + 1}. {q['q']}")
         
         # Display the radio buttons for the current question
+        current_answer = st.session_state.answers[st.session_state.q_index]
+        
         choice_text = st.radio(
             "Choose one:",
             [opt[0] for opt in q["opts"]],
             key=f"q{st.session_state.q_index}",
-            index=[opt[0] for opt in q["opts"]].index(st.session_state.answers[st.session_state.q_index][0])
-            if st.session_state.answers[st.session_state.q_index] is not None else None
+            index=[opt[0] for opt in q["opts"]].index(current_answer[0])
+            if current_answer is not None
+            else None
         )
         
         # Find the full option dictionary from the choice
