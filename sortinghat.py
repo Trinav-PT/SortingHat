@@ -163,118 +163,95 @@ def check_easter_egg(name):
     
     easter_eggs = [
         {
-            "similar": ["pahul", "prakamya", "khanak", "shaurya", "manaasve"],
-            "exact": [],
+            "exact": ["pahul", "prakamya", "khanak", "shaurya", "manaasve", "aman paliwal"],
             "message": "Thanks for helping make this!"
         },
         {
-            "similar": ["maanal"],
-            "exact": ["aman paliwal"],
+            "exact": ["maanal", "aman paliwal"],
             "message": "Lit Club real no posers gang!"
         },
         {
-            "similar": ["sara"],
-            "exact": [],
+            "exact": ["sara"],
             "message": "I'll get you an atom bomb ahhh chocolate in the next meeting if you complete this test"
         },
         {
-            "similar": ["avani", "malini"],
-            "exact": [],
+            "exact": ["avani", "malini"],
             "message": "cranium gang"
         },
         {
-            "similar": ["prasham"],
-            "exact": [],
+            "exact": ["prasham"],
             "message": "Hi Motabhai"
         },
         {
-            "similar": ["chris", "christopher"],
-            "exact": [],
+            "exact": ["chris", "christopher"],
             "message": "Hello faker"
         },
         {
-            "similar": ["gaurav", "swaroop", "jatin", "saranya", "abhineet", "kush", "alhaan"],
-            "exact": ["kabir gupta", "pratham vala"],
+            "exact": ["gaurav", "swaroop", "jatin", "saranya", "abhineet", "kush", "alhaan", "kabir gupta", "pratham vala"],
             "message": "We gotta win BoB"
         },
         {
-            "similar": [],
             "exact": ["kabir bhalla", "rohan gupta", "anahad"],
             "message": "Let's go Quiz Club!"
         },
         {
-            "similar": ["trinav"],
-            "exact": [],
+            "exact": ["trinav"],
             "message": "So it's you"
         },
         {
-            "similar": ["raka"],
-            "exact": [],
+            "exact": ["raka"],
             "message": "What's your favourite Dream Theater song?"
         },
         {
-            "similar": ["anandita", "chinmayi"],
-            "exact": [],
+            "exact": ["anandita", "chinmayi"],
             "message": "TEAM CATS!"
         },
         {
-            "similar": ["hussein"],
-            "exact": [],
+            "exact": ["hussein"],
             "message": "Thanks for swapping the timings that night!"
         },
         {
-            "similar": ["mudasir"],
-            "exact": [],
+            "exact": ["mudasir"],
             "message": "Will this site help me in interviews?"
         },
         {
-            "similar": ["ramam"],
-            "exact": [],
+            "exact": ["ramam"],
             "message": "Please teach me SMAI and FOCS"
         },
         {
-            "similar": ["mihir"],
-            "exact": [],
+            "exact": ["mihir"],
             "message": "Sigma Sigma boy Sigma boy"
         },
         {
-            "similar": ["nikunj"],
-            "exact": [],
+            "exact": ["nikunj"],
             "message": "How's Korea?"
         },
         {
-            "similar": ["preesha", "lakshit"],
-            "exact": ["kunal gupta", "subham jalan", "yashvi maheshwari"],
+            "exact": ["preesha", "lakshit", "kunal gupta", "subham jalan", "yashvi maheshwari"],
             "message": "Wow even the SC is taking the test!"
         },
         {
-            "similar": ["anmol"],
-            "exact": [],
+            "exact": ["anmol"],
             "message": "Hi Ma'am!"
         },
         {
-            "similar": ["anish"],
-            "exact": [],
+            "exact": ["anish"],
             "message": "I'm Skonging rn"
         },
         {
-            "similar": ["parth"],
-            "exact": [],
+            "exact": ["parth"],
             "message": "So you get the Undertale references..."
         },
         {
-            "similar": ["varun"],
-            "exact": [],
+            "exact": ["varun"],
             "message": "Are you roommate Varun or the other Varun?"
         },
         {
-            "similar": ["saanvi bhasker", "tista", "proshita", "kuhuk", "armaan", "shreya", "divy", "manavi", "maan"],
-            "exact": [],
+            "exact": ["saanvi bhasker", "tista", "proshita", "kuhuk", "armaan", "shreya", "divy", "manavi", "maan"],
             "message": "GeekRoom Team!"
         },
         {
-            "similar": ["aahana"],
-            "exact": [],
+            "exact": ["aahana"],
             "message": "What's my horoscope for today?"
         }
     ]
@@ -282,12 +259,6 @@ def check_easter_egg(name):
     for egg in easter_eggs:
         for exact_name in egg["exact"]:
             if name_lower == exact_name.lower():
-                return egg["message"]
-    
-    for egg in easter_eggs:
-        for similar_name in egg["similar"]:
-            similarity = difflib.SequenceMatcher(None, name_lower, similar_name.lower()).ratio()
-            if similarity >= 0.7:
                 return egg["message"]
     
     return None
