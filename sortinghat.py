@@ -579,25 +579,79 @@ if st.checkbox("Show past results"):
         #     except FileNotFoundError:
         #         st.info("No results file to reset.")
 
-# --- Credits Section ---
+# --- Credits Section (New) ---
 st.markdown("---")
+
+# Use a custom div with a theme
 st.markdown(
     """
     <div style="
-        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+        background: radial-gradient(circle at top, #1a1a1a, #000000);
         border: 2px solid #5a4633;
         border-radius: 15px;
         padding: 20px;
         margin-top: 30px;
-        text-align: center;
-        box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+        color: #f8f4e5;
+        font-family: 'Times New Roman', serif;
+        position: relative;
+        overflow: hidden;
+        min-height: 250px;
     ">
-        <h3 style="color:#3e2723; font-family: 'Georgia';">Made with Hopes and Dreams by:</h3>
-        <p style="color:#3e2723;">
-            <strong>Questions:</strong> Khanak, Pahul, Prakamya and Shaurya<br>
-            <strong>Site Dev and Undertale References:</strong> Trinav<br>
-            <strong>Certificate Design:</strong> Manaasve
-        </p>
+        <style>
+            @keyframes credit-scroll {
+                from { transform: translateY(100%); }
+                to { transform: translateY(-100%); }
+            }
+            .credits-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                animation: credit-scroll 30s linear infinite;
+                text-align: center;
+                white-space: nowrap;
+            }
+            .credit-line {
+                font-size: 18px;
+                line-height: 1.8;
+                margin: 15px 0;
+            }
+            .credit-role {
+                font-weight: bold;
+                font-size: 20px;
+                color: #e8e0c4;
+            }
+            .credit-name {
+                font-style: italic;
+                color: #d7ccb0;
+            }
+            .credits-title {
+                font-size: 30px;
+                font-family: 'Georgia', serif;
+                font-weight: bold;
+                color: gold;
+                margin-bottom: 20px;
+            }
+        </style>
+        <div class="credits-container">
+            <h3 class="credits-title">The Masterminds Behind the Magic</h3>
+            <div class="credit-line">
+                <p class="credit-role">Questions</p>
+                <p class="credit-name">Khanak, Pahul, Prakamya, Shaurya</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Site Dev & Undertale References</p>
+                <p class="credit-name">Trinav</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Certificate Design</p>
+                <p class="credit-name">Manaasve</p>
+            </div>
+            <br><br>
+            <p class="credit-role">~ Thank You for Playing ~</p>
+        </div>
     </div>
     """,
     unsafe_allow_html=True
