@@ -444,7 +444,7 @@ st.markdown(
     ">
         <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
         <p style="color:#3e2723; font-style: italic;">Enter your full name to reduce the chances of encountering a secret jumpscare.</p>
-        <p style="color:#3e2723; font-style: italic;">Or don't, it's up to you....</p>
+        <p style="color:#3e2723; font-style: italic;">or don't...it's up to you. Maybe that's better?</p>
     </div>
     """,
     unsafe_allow_html=True
