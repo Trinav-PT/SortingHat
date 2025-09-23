@@ -650,7 +650,7 @@ st.markdown(
                 <p class="credit-name">Manaasve</p>
             </div>
             <div class="credit-line">
-                <p class="credit-role">Have a magical day! See you Monday =)</p>
+                <p class="credit-role">Mischief Managed. See you Monday =)</p>
             </div>
         </div>
     </div>
