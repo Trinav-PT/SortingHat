@@ -4,15 +4,12 @@ import altair as alt
 from collections import Counter
 import random
 from datetime import datetime
+import os
 import difflib
 import time
-import gspread
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
-import json
 
 # --- Constants ---
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
-SHEET_NAME = "SortingHatResults" # Name of your Google Sheet
 
 QUESTIONS = [
     {
@@ -139,44 +136,6 @@ QUESTIONS = [
     },
 ]
 
-# --- Google Sheets Functions ---
-def get_gspread_client():
-    """Connect to Google Sheets using st.secrets."""
-    try:
-        service_account_info = st.secrets["gcp_service_account"]  # already a dict
-        gc = gspread.service_account_from_dict(service_account_info)
-        return gc
-    except Exception as e:
-        st.error(f"Error connecting to Google Sheets: {e}")
-        st.stop()
-
-def get_results_df():
-    """Read the results from the Google Sheet, or create it if it doesn't exist."""
-    gc = get_gspread_client()
-    try:
-        sh = gc.open(SHEET_NAME)
-        worksheet = sh.get_worksheet(0)
-        df = get_as_dataframe(worksheet)
-        return df if not df.empty else pd.DataFrame(columns=["name", "house", "timestamp"])
-    except gspread.exceptions.SpreadsheetNotFound:
-        st.warning("Google Sheet not found. Creating a new one...")
-        sh = gc.create(SHEET_NAME)
-        sh.share(st.secrets["gcp_service_account"]["client_email"], perm_type='user', role='writer')
-        worksheet = sh.get_worksheet(0)
-        df = pd.DataFrame(columns=["name", "house", "timestamp"])
-        set_with_dataframe(worksheet, df)
-        return df
-    except Exception as e:
-        st.error(f"Error reading from Google Sheet: {e}")
-        return pd.DataFrame(columns=["name", "house", "timestamp"])
-
-def save_results_df(df):
-    """Save the DataFrame back to the Google Sheet."""
-    gc = get_gspread_client()
-    sh = gc.open(SHEET_NAME)
-    worksheet = sh.get_worksheet(0)
-    set_with_dataframe(worksheet, df, include_index=False, resize=True)
-
 def score_answers(selected_options):
     scores = Counter()
     for option in selected_options:
@@ -207,26 +166,36 @@ def calculate_user_house_scores(results_df):
     
     user_scores = {}
     
+    # We need to store individual question responses to calculate this properly
+    # For now, we'll use a simplified approach based on final house assignment
+    # and assume stronger affinity based on house assignment patterns
+    
     for _, user in results_df.iterrows():
         name = user['name']
         assigned_house = user['house']
         
+        # Initialize user scores
         if name not in user_scores:
             user_scores[name] = {house: 0 for house in HOUSES}
         
+        # Give higher score to assigned house, simulate relative scores
+        # This is a simplified approach - ideally we'd store actual quiz scores
         user_scores[name][assigned_house] += 10
         
+        # Add some variation to other houses (simulated)
         import random
         for house in HOUSES:
             if house != assigned_house:
                 user_scores[name][house] += random.randint(1, 5)
     
+    # Find champions for each house (highest relative score)
     champions = {}
     for house in HOUSES:
         max_relative_score = -100
         champion = "None"
         
         for user, scores in user_scores.items():
+            # Calculate relative score (how much more this house vs average of others)
             other_houses = [h for h in HOUSES if h != house]
             other_avg = sum(scores[h] for h in other_houses) / len(other_houses) if other_houses else 0
             relative_score = scores[house] - other_avg
@@ -237,6 +206,7 @@ def calculate_user_house_scores(results_df):
         
         champions[house] = champion
     
+    # Find most neutral person (most balanced scores)
     min_variance = float('inf')
     most_neutral = "None"
     
@@ -295,8 +265,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load past results from Google Sheets
-results_df = get_results_df()
+# Load past results
+try:
+    results_df = pd.read_csv("results.csv")
+except FileNotFoundError:
+    results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
 
 # Optional leaderboard display
 if st.checkbox("Show House Champions & Statistics"):
@@ -354,7 +327,6 @@ st.markdown(
         box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
     ">
         <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
-        <p style="color:#3e2723; font-style: italic;">Enter your full name to reduce the likelihood of encountering a secret jumpscare.</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -421,19 +393,24 @@ if name:
         unsafe_allow_html=True
     )
 
+    # Only show the button if house hasn't been revealed yet
     if not st.session_state.house_revealed:
         if st.button("Reveal My House"):
             if len(answers) != len(QUESTIONS):
                 st.warning("Please answer all questions before revealing your house!")
             else:
+                # Perform the check and set a state variable
                 if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
                     st.session_state.is_duplicate_name = True
                 
+                # Set a flag to process the submission in the next rerun
                 st.session_state.submission_processed = True
                 st.session_state.house_revealed = True
-                st.rerun()
+                st.rerun()  # Refresh to show results
 
+    # Show results if house has been revealed
     if st.session_state.house_revealed:
+        # Recalculate answers from current radio button states
         current_answers = []
         for i, q in enumerate(QUESTIONS, 1):
             if f"q{i}" in st.session_state and st.session_state[f"q{i}"] is not None:
@@ -445,35 +422,41 @@ if name:
         
         if len(current_answers) == len(QUESTIONS):
             
+            # Show the warning if the flag was set on the previous run
             if st.session_state.is_duplicate_name:
                 st.warning("it's almost like you already knew the questions...")
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-            # This block now saves the data to Google Sheets
+            # --- NEW ONE-SHOT LOGIC FOR WRITING TO CSV ---
+            # This block runs only once per submission, immediately after the button is pressed
             if st.session_state.submission_processed:
-                st.session_state.submission_processed = False
+                st.session_state.submission_processed = False # Reset the flag immediately
             
+                # Calculate the house
                 counts = score_answers(current_answers)
                 house, tied = determine_house(counts)
             
+                # Save the new result
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
                 
-                # Load the full data and append the new row
-                current_results_df = get_results_df()
-                new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
-                save_results_df(new_results_df)
+                # Append to the main DataFrame and save to CSV
+                results_df = pd.concat([results_df, df_result], ignore_index=True)
+                results_df.to_csv("results.csv", index=False)
 
             with st.spinner('The Sorting Hat is deciding...'):
                 time.sleep(2)
 
+            # Only show balloons the first time the house is revealed
             if not st.session_state.balloons_shown:
                 st.balloons()
                 st.session_state.balloons_shown = True
 
+            # Calculate the house again for display (after the submission processed block)
             counts = score_answers(current_answers)
             house, tied = determine_house(counts)
             
+            # Map houses to colors
             house_colors = {
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
@@ -482,6 +465,7 @@ if name:
                 "Neutral": "#CD5C5C"
             }
 
+            # Change background dynamically
             bg_color = house_colors.get(house, "#CD5C5C")
             st.markdown(
                 f"""
@@ -495,6 +479,7 @@ if name:
                 unsafe_allow_html=True
             )
             
+            # Results card
             st.markdown(
                 f"""
                 <div style="
@@ -513,6 +498,7 @@ if name:
                 unsafe_allow_html=True
             )
             
+            # Check for a tie and display a message if one exists
             if len(tied) > 1:
                 tied_houses_str = ", ".join(tied[:-1])
                 if len(tied) > 2:
@@ -520,11 +506,13 @@ if name:
                 tied_houses_str += f" and {tied[-1]}"
                 st.info(f"The sorting hat found a tie between {tied_houses_str} before making a final decision.")
 
+            # Create a dataframe for the user's personal points
             df_scores_chart = pd.DataFrame({
                 "House": counts.keys(),
                 "Points": counts.values()
             })
             
+            # Show your personal points distribution chart
             st.markdown(
                 """
                 <div style="
@@ -542,6 +530,7 @@ if name:
                 unsafe_allow_html=True
             )
             
+            # Define house colors for the pie chart
             house_color_map = {
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
@@ -549,6 +538,7 @@ if name:
                 "Hufflepuff": "#FFD700"
             }
             
+            # Calculate percentages
             total_points = df_scores_chart['Points'].sum()
             df_scores_chart['Percentage'] = (df_scores_chart['Points'] / total_points) * 100
             
@@ -581,6 +571,12 @@ if name:
             
             st.altair_chart(combined_chart, use_container_width=True)
 
+            # Reload the results dataframe to get the most current data for the public leaderboard
+            try:
+                fresh_results_df = pd.read_csv("results.csv")
+            except FileNotFoundError:
+                fresh_results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
+
 # Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
@@ -596,18 +592,16 @@ if st.checkbox("Show past results"):
 
     if password_input == correct_password:
         try:
-            df_admin = get_results_df()
+            df_admin = pd.read_csv("results.csv")
             st.dataframe(df_admin)
             st.write("---")
-        except Exception as e:
-            st.warning(f"Error loading results: {e}")
+        except FileNotFoundError:
+            st.warning("No past results found yet.")
 
         if st.button("Reset All Results"):
             try:
-                # Create a new, empty DataFrame
-                empty_df = pd.DataFrame(columns=["name", "house", "timestamp"])
-                save_results_df(empty_df)
-                st.success("Results in Google Sheet have been reset.")
+                os.remove("results.csv")
+                st.success("Results file has been reset.")
                 st.rerun()
-            except Exception as e:
-                st.error(f"Error resetting results: {e}")
+            except FileNotFoundError:
+                st.info("No results file to reset.")
