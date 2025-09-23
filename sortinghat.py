@@ -231,6 +231,34 @@ st.markdown(
     .stApp {
         background-color: #CD5C5C;  /* maroon-ish */
     }
+    
+    /* Improved spacing for radio buttons */
+    .stRadio > div {
+        gap: 1rem !important;
+    }
+    
+    .stRadio label {
+        margin-bottom: 0.75rem !important;
+        padding: 0.5rem !important;
+        border-radius: 8px;
+        background-color: rgba(248, 244, 229, 0.1);
+        transition: background-color 0.2s ease;
+    }
+    
+    .stRadio label:hover {
+        background-color: rgba(248, 244, 229, 0.2);
+    }
+    
+    /* Add more space between radio button options */
+    .stRadio > div > div {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Style radio button text for better readability */
+    .stRadio label span {
+        line-height: 1.4 !important;
+        padding-left: 0.5rem !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -364,7 +392,9 @@ if name:
             for text, score_dict in q["opts"]:
                 if text == choice:
                     answers.append(score_dict)
-            st.write("---")
+            
+            # Add extra space after each answered question
+            st.markdown("<div style='margin-bottom: 2rem;'></div>", unsafe_allow_html=True)
 
     # Styled button
     st.markdown(
