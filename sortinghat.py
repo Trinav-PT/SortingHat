@@ -136,6 +136,10 @@ QUESTIONS = [
     },
 ]
 
+# --- Jumble the options every reload ---
+for question in QUESTIONS:
+    random.shuffle(question['opts'])
+
 def score_answers(selected_options):
     scores = Counter()
     for option in selected_options:
@@ -163,39 +167,29 @@ def calculate_user_house_scores(results_df):
     """Calculate each user's score for each house and find champions"""
     if len(results_df) == 0:
         return {}, "None"
-    
+
     user_scores = {}
-    
-    # We need to store individual question responses to calculate this properly
-    # For now, we'll use a simplified approach based on final house assignment
-    # and assume stronger affinity based on house assignment patterns
     
     for _, user in results_df.iterrows():
         name = user['name']
         assigned_house = user['house']
-        
-        # Initialize user scores
+
         if name not in user_scores:
             user_scores[name] = {house: 0 for house in HOUSES}
         
-        # Give higher score to assigned house, simulate relative scores
-        # This is a simplified approach - ideally we'd store actual quiz scores
         user_scores[name][assigned_house] += 10
         
-        # Add some variation to other houses (simulated)
         import random
         for house in HOUSES:
             if house != assigned_house:
                 user_scores[name][house] += random.randint(1, 5)
-    
-    # Find champions for each house (highest relative score)
+
     champions = {}
     for house in HOUSES:
         max_relative_score = -100
         champion = "None"
         
         for user, scores in user_scores.items():
-            # Calculate relative score (how much more this house vs average of others)
             other_houses = [h for h in HOUSES if h != house]
             other_avg = sum(scores[h] for h in other_houses) / len(other_houses) if other_houses else 0
             relative_score = scores[house] - other_avg
@@ -205,8 +199,7 @@ def calculate_user_house_scores(results_df):
                 champion = user
         
         champions[house] = champion
-    
-    # Find most neutral person (most balanced scores)
+
     min_variance = float('inf')
     most_neutral = "None"
     
@@ -265,7 +258,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load past results
+# Load past results from CSV
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
@@ -273,6 +266,11 @@ except FileNotFoundError:
 
 # Optional leaderboard display
 if st.checkbox("Show House Champions & Statistics"):
+    # Condition for the snarky warning
+    if len(results_df) < 10:
+        st.warning("It was all reset")
+        st.image("scaryflowey.png")
+
     if len(results_df) > 0:
         champions, most_neutral = calculate_user_house_scores(results_df)
         house_counts = results_df['house'].value_counts().to_dict()
@@ -327,6 +325,7 @@ st.markdown(
         box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
     ">
         <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
+        <p style="color:#3e2723; font-style: italic;">Enter your full name to reduce the likelihood of encountering a secret jumpscare.</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -393,24 +392,19 @@ if name:
         unsafe_allow_html=True
     )
 
-    # Only show the button if house hasn't been revealed yet
     if not st.session_state.house_revealed:
         if st.button("Reveal My House"):
             if len(answers) != len(QUESTIONS):
                 st.warning("Please answer all questions before revealing your house!")
             else:
-                # Perform the check and set a state variable
                 if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
                     st.session_state.is_duplicate_name = True
                 
-                # Set a flag to process the submission in the next rerun
                 st.session_state.submission_processed = True
                 st.session_state.house_revealed = True
-                st.rerun()  # Refresh to show results
+                st.rerun()
 
-    # Show results if house has been revealed
     if st.session_state.house_revealed:
-        # Recalculate answers from current radio button states
         current_answers = []
         for i, q in enumerate(QUESTIONS, 1):
             if f"q{i}" in st.session_state and st.session_state[f"q{i}"] is not None:
@@ -422,41 +416,33 @@ if name:
         
         if len(current_answers) == len(QUESTIONS):
             
-            # Show the warning if the flag was set on the previous run
             if st.session_state.is_duplicate_name:
                 st.warning("it's almost like you already knew the questions...")
                 st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-            # --- NEW ONE-SHOT LOGIC FOR WRITING TO CSV ---
-            # This block runs only once per submission, immediately after the button is pressed
             if st.session_state.submission_processed:
-                st.session_state.submission_processed = False # Reset the flag immediately
+                st.session_state.submission_processed = False
             
-                # Calculate the house
                 counts = score_answers(current_answers)
                 house, tied = determine_house(counts)
             
-                # Save the new result
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
                 
-                # Append to the main DataFrame and save to CSV
-                results_df = pd.concat([results_df, df_result], ignore_index=True)
-                results_df.to_csv("results.csv", index=False)
+                current_results_df = pd.read_csv("results.csv")
+                new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
+                new_results_df.to_csv("results.csv", index=False)
 
             with st.spinner('The Sorting Hat is deciding...'):
                 time.sleep(2)
 
-            # Only show balloons the first time the house is revealed
             if not st.session_state.balloons_shown:
                 st.balloons()
                 st.session_state.balloons_shown = True
 
-            # Calculate the house again for display (after the submission processed block)
             counts = score_answers(current_answers)
             house, tied = determine_house(counts)
             
-            # Map houses to colors
             house_colors = {
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
@@ -465,7 +451,6 @@ if name:
                 "Neutral": "#CD5C5C"
             }
 
-            # Change background dynamically
             bg_color = house_colors.get(house, "#CD5C5C")
             st.markdown(
                 f"""
@@ -479,7 +464,6 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # Results card
             st.markdown(
                 f"""
                 <div style="
@@ -498,7 +482,6 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # Check for a tie and display a message if one exists
             if len(tied) > 1:
                 tied_houses_str = ", ".join(tied[:-1])
                 if len(tied) > 2:
@@ -506,13 +489,11 @@ if name:
                 tied_houses_str += f" and {tied[-1]}"
                 st.info(f"The sorting hat found a tie between {tied_houses_str} before making a final decision.")
 
-            # Create a dataframe for the user's personal points
             df_scores_chart = pd.DataFrame({
                 "House": counts.keys(),
                 "Points": counts.values()
             })
             
-            # Show your personal points distribution chart
             st.markdown(
                 """
                 <div style="
@@ -530,7 +511,6 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # Define house colors for the pie chart
             house_color_map = {
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
@@ -538,7 +518,6 @@ if name:
                 "Hufflepuff": "#FFD700"
             }
             
-            # Calculate percentages
             total_points = df_scores_chart['Points'].sum()
             df_scores_chart['Percentage'] = (df_scores_chart['Points'] / total_points) * 100
             
@@ -571,12 +550,6 @@ if name:
             
             st.altair_chart(combined_chart, use_container_width=True)
 
-            # Reload the results dataframe to get the most current data for the public leaderboard
-            try:
-                fresh_results_df = pd.read_csv("results.csv")
-            except FileNotFoundError:
-                fresh_results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
-
 # Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
@@ -605,3 +578,27 @@ if st.checkbox("Show past results"):
         #         st.rerun()
         #     except FileNotFoundError:
         #         st.info("No results file to reset.")
+
+# --- Credits Section ---
+st.markdown("---")
+st.markdown(
+    """
+    <div style="
+        background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+        border: 2px solid #5a4633;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: center;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+    ">
+        <h3 style="color:#3e2723; font-family: 'Georgia';">Made with Hopes and Dreams by:</h3>
+        <p style="color:#3e2723;">
+            <strong>Questions:</strong> Khanak, Pahul, Prakamya and Shaurya<br>
+            <strong>Site Dev and Undertale References:</strong> Trinav<br>
+            <strong>Certificate Design:</strong> Manaasve
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
