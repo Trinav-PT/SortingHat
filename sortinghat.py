@@ -143,7 +143,7 @@ QUESTIONS = [
 def get_gspread_client():
     """Connect to Google Sheets using st.secrets."""
     try:
-        service_account_info = json.loads(st.secrets["gcp_service_account"]["private_key"])
+        service_account_info = st.secrets["gcp_service_account"]  # already a dict
         gc = gspread.service_account_from_dict(service_account_info)
         return gc
     except Exception as e:
