@@ -255,7 +255,7 @@ def check_easter_egg(name):
             "message": "What's my horoscope for today?"
         },
         {
-            "exact": ["prajna, uma, suhaani"],
+            "exact": ["prajna", "uma", "suhaani"],
             "message": "I loved the apple crumple!"
         }
     ]
