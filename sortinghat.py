@@ -8,7 +8,6 @@ import os
 import difflib
 import time
 
-# --- Constants ---
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
 
 QUESTIONS = [
@@ -159,8 +158,141 @@ def is_name_similar(new_name, past_names, threshold=0.8):
             return True
     return False
 
+def check_easter_egg(name):
+    name_lower = name.lower().strip()
+    
+    easter_eggs = [
+        {
+            "similar": ["pahul", "prakamya", "khanak", "shaurya", "manaasve"],
+            "exact": [],
+            "message": "Thanks for helping make this!"
+        },
+        {
+            "similar": ["maanal"],
+            "exact": ["aman paliwal"],
+            "message": "Lit Club real no posers gang!"
+        },
+        {
+            "similar": ["sara"],
+            "exact": [],
+            "message": "I'll get you an atom bomb ahhh chocolate in the next meeting if you complete this test"
+        },
+        {
+            "similar": ["avani", "malini"],
+            "exact": [],
+            "message": "cranium gang"
+        },
+        {
+            "similar": ["prasham"],
+            "exact": [],
+            "message": "Hi Motabhai"
+        },
+        {
+            "similar": ["chris", "christopher"],
+            "exact": [],
+            "message": "Hello faker"
+        },
+        {
+            "similar": ["gaurav", "swaroop", "jatin", "saranya", "abhineet", "kush", "alhaan"],
+            "exact": ["kabir gupta", "pratham vala"],
+            "message": "We gotta win BoB"
+        },
+        {
+            "similar": [],
+            "exact": ["kabir bhalla", "rohan gupta", "anahad"],
+            "message": "Let's go Quiz Club!"
+        },
+        {
+            "similar": ["trinav"],
+            "exact": [],
+            "message": "So it's you"
+        },
+        {
+            "similar": ["raka"],
+            "exact": [],
+            "message": "What's your favourite Dream Theater song?"
+        },
+        {
+            "similar": ["anandita", "chinmayi"],
+            "exact": [],
+            "message": "TEAM CATS!"
+        },
+        {
+            "similar": ["hussein"],
+            "exact": [],
+            "message": "Thanks for swapping the timings that night!"
+        },
+        {
+            "similar": ["mudasir"],
+            "exact": [],
+            "message": "Will this site help me in interviews?"
+        },
+        {
+            "similar": ["ramam"],
+            "exact": [],
+            "message": "Please teach me SMAI and FOCS"
+        },
+        {
+            "similar": ["mihir"],
+            "exact": [],
+            "message": "Sigma Sigma boy Sigma boy"
+        },
+        {
+            "similar": ["nikunj"],
+            "exact": [],
+            "message": "How's Korea?"
+        },
+        {
+            "similar": ["preesha", "lakshit"],
+            "exact": ["kunal gupta", "subham jalan", "yashvi maheshwari"],
+            "message": "Wow even the SC is taking the test!"
+        },
+        {
+            "similar": ["anmol"],
+            "exact": [],
+            "message": "Hi Ma'am!"
+        },
+        {
+            "similar": ["anish"],
+            "exact": [],
+            "message": "I'm Skonging rn"
+        },
+        {
+            "similar": ["parth"],
+            "exact": [],
+            "message": "So you get the Undertale references..."
+        },
+        {
+            "similar": ["varun"],
+            "exact": [],
+            "message": "Are you roommate Varun or the other Varun?"
+        },
+        {
+            "similar": ["saanvi bhasker", "tista", "proshita", "kuhuk", "armaan", "shreya", "divy", "manavi", "maan"],
+            "exact": [],
+            "message": "GeekRoom Team!"
+        },
+        {
+            "similar": ["aahana"],
+            "exact": [],
+            "message": "What's my horoscope for today?"
+        }
+    ]
+    
+    for egg in easter_eggs:
+        for exact_name in egg["exact"]:
+            if name_lower == exact_name.lower():
+                return egg["message"]
+    
+    for egg in easter_eggs:
+        for similar_name in egg["similar"]:
+            similarity = difflib.SequenceMatcher(None, name_lower, similar_name.lower()).ratio()
+            if similarity >= 0.7:
+                return egg["message"]
+    
+    return None
+
 def calculate_user_house_scores(results_df):
-    """Calculate each user's score for each house and find champions"""
     if len(results_df) == 0:
         return {}, "None"
 
@@ -211,10 +343,8 @@ def calculate_user_house_scores(results_df):
     
     return champions, most_neutral
 
-# --- Streamlit page setup ---
 st.set_page_config(page_title="Sorting Hat", page_icon="🧙‍♂️")
 
-# Initialize session state variables at the very beginning of the script
 if 'house_revealed' not in st.session_state:
     st.session_state.house_revealed = False
 if 'balloons_shown' not in st.session_state:
@@ -224,15 +354,13 @@ if 'is_duplicate_name' not in st.session_state:
 if 'submission_processed' not in st.session_state:
     st.session_state.submission_processed = False
 
-# Global background (default maroon)
 st.markdown(
     """
     <style>
     .stApp {
-        background-color: #CD5C5C;  /* maroon-ish */
+        background-color: #CD5C5C;
     }
     
-    /* Improved spacing for radio buttons */
     .stRadio > div {
         gap: 1rem !important;
     }
@@ -249,12 +377,10 @@ st.markdown(
         background-color: rgba(248, 244, 229, 0.2);
     }
     
-    /* Add more space between radio button options */
     .stRadio > div > div {
         margin-bottom: 1rem !important;
     }
     
-    /* Style radio button text for better readability */
     .stRadio label span {
         line-height: 1.4 !important;
         padding-left: 0.5rem !important;
@@ -264,7 +390,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Title banner
 st.markdown(
     """
     <div style="
@@ -282,16 +407,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load past results from CSV
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
     results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
-    results_df.to_csv("results.csv", index=False) # FIX: Create the file if it doesn't exist
+    results_df.to_csv("results.csv", index=False)
 
-# Optional leaderboard display
 if st.checkbox("Show House Champions & Statistics"):
-    # Condition for the snarky warning
     if len(results_df) < 10:
         st.warning("It was all reset")
         st.image("scaryflowey.png")
@@ -316,18 +438,15 @@ if st.checkbox("Show House Champions & Statistics"):
             unsafe_allow_html=True
         )
         
-        # House Champions
         st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Most Dedicated House Members:</h3>", unsafe_allow_html=True)
         for house in HOUSES:
             champion = champions.get(house, "None")
             st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most {house}:</strong> {champion}</p>", unsafe_allow_html=True)
         
-        # Most Neutral Person
         st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most Neutral:</strong> {most_neutral}</p>", unsafe_allow_html=True)
         
         st.markdown("---")
         
-        # Member Counts
         st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Total Members in Each House:</h3>", unsafe_allow_html=True)
         for house in HOUSES:
             count = house_counts.get(house, 0)
@@ -338,7 +457,6 @@ if st.checkbox("Show House Champions & Statistics"):
         st.info("No results available yet. Complete the sorting to see statistics!")
     st.markdown("---")
 
-# Name input
 st.markdown(
     """
     <div style="
@@ -358,6 +476,27 @@ st.markdown(
 name = st.text_input("", key="name_input").strip()
 
 if name:
+    easter_egg_message = check_easter_egg(name)
+    if easter_egg_message:
+        st.markdown(
+            f"""
+            <div style="
+                background: linear-gradient(135deg, #FFD700, #FFA500);
+                border: 3px solid #FF6347;
+                border-radius: 15px;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+                text-align: center;
+            ">
+                <h3 style="color:#8B0000; font-family: 'Georgia'; margin: 0;">
+                    🎉 {easter_egg_message} 🎉
+                </h3>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
     st.write(f"Hello {name}! Answer the following questions to find out your Hogwarts house.")
     
     answers = []
@@ -393,10 +532,8 @@ if name:
                 if text == choice:
                     answers.append(score_dict)
             
-            # Add extra space after each answered question
             st.markdown("<div style='margin-bottom: 2rem;'></div>", unsafe_allow_html=True)
 
-    # Styled button
     st.markdown(
         """
         <style>
@@ -456,7 +593,6 @@ if name:
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
             
-                # FIX: Read the file here again, which is now guaranteed to exist
                 current_results_df = pd.read_csv("results.csv")
                 new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
                 new_results_df.to_csv("results.csv", index=False)
@@ -578,7 +714,6 @@ if name:
             
             st.altair_chart(combined_chart, use_container_width=True)
 
-# Password-protected past results
 st.write("---")
 if st.checkbox("Show past results"):
     password_input = st.text_input(
@@ -599,10 +734,8 @@ if st.checkbox("Show past results"):
         except FileNotFoundError:
             st.warning("No past results found yet.")
 
-# --- Credits Section (New) ---
 st.markdown("---")
 
-# Use a custom div with a theme
 st.markdown(
     """
     <div style="
@@ -667,7 +800,7 @@ st.markdown(
             </div>
             <div class="credit-line">
                 <p class="credit-role">Certificate Design</p>
-                <p class="credit-name">Manaasve and Yashvi</p>
+                <p class="credit-name">Manaasve</p>
             </div>
             <div class="credit-line">
                 <p class="credit-role">Mischief Managed. See you on Monday =)</p>
