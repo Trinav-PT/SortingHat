@@ -461,7 +461,7 @@ if name:
                 text-align: center;
             ">
                 <h3 style="color:#8B0000; font-family: 'Georgia'; margin: 0;">
-                    🎉 {easter_egg_message} 🎉
+                    🙃 {easter_egg_message} 🙃
                 </h3>
             </div>
             """,
