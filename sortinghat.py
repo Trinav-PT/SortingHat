@@ -587,7 +587,7 @@ if name:
                 "Gryffindor": "#7F0909",
                 "Slytherin": "#1A472A",
                 "Ravenclaw": "#0E1A40",
-                "Hufflepuff": "#EEE117",
+                "Hufflepuff": "#B8860B",
                 "Neutral": "#CD5C5C"
             }
 
