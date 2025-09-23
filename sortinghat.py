@@ -259,6 +259,7 @@ try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
     results_df = pd.DataFrame(columns=["name", "house", "timestamp"])
+    results_df.to_csv("results.csv", index=False) # FIX: Create the file if it doesn't exist
 
 # Optional leaderboard display
 if st.checkbox("Show House Champions & Statistics"):
@@ -414,7 +415,7 @@ if name:
             
             if st.session_state.is_duplicate_name:
                 st.warning("it's almost like you already knew the questions...")
-                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+                st.image("scaryflowey.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
             if st.session_state.submission_processed:
                 st.session_state.submission_processed = False
@@ -425,6 +426,7 @@ if name:
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
             
+                # FIX: Read the file here again, which is now guaranteed to exist
                 current_results_df = pd.read_csv("results.csv")
                 new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
                 new_results_df.to_csv("results.csv", index=False)
@@ -566,14 +568,6 @@ if st.checkbox("Show past results"):
             st.write("---")
         except FileNotFoundError:
             st.warning("No past results found yet.")
-
-        # if st.button("Reset All Results"):
-        #     try:
-        #         os.remove("results.csv")
-        #         st.success("Results file has been reset.")
-        #         st.rerun()
-        #     except FileNotFoundError:
-        #         st.info("No results file to reset.")
 
 # --- Credits Section (New) ---
 st.markdown("---")
