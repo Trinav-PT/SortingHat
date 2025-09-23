@@ -598,10 +598,10 @@ if st.checkbox("Show past results"):
         except FileNotFoundError:
             st.warning("No past results found yet.")
 
-        if st.button("Reset All Results"):
-            try:
-                os.remove("results.csv")
-                st.success("Results file has been reset.")
-                st.rerun()
-            except FileNotFoundError:
-                st.info("No results file to reset.")
+        # if st.button("Reset All Results"):
+        #     try:
+        #         os.remove("results.csv")
+        #         st.success("Results file has been reset.")
+        #         st.rerun()
+        #     except FileNotFoundError:
+        #         st.info("No results file to reset.")
