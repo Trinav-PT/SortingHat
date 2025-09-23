@@ -164,7 +164,7 @@ def check_easter_egg(name):
     easter_eggs = [
         {
             "exact": ["pahul", "prakamya", "khanak", "shaurya", "manaasve", "aman paliwal"],
-            "message": "Thanks for helping make this!"
+            "message": "Thanks for all the help in making this!"
         },
         {
             "exact": ["maanal", "aman paliwal"],
