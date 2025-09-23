@@ -636,10 +636,10 @@ st.markdown(
             }
         </style>
         <div class="credits-container">
-            <h3 class="credits-title">The Masterminds Behind the Magic</h3>
+            <h3 class="credits-title">Made with Hopes and Dreams By</h3>
             <div class="credit-line">
                 <p class="credit-role">Questions</p>
-                <p class="credit-name">Khanak, Pahul, Prakamya, Shaurya</p>
+                <p class="credit-name">Khanak, Pahul, Prakamya and Shaurya</p>
             </div>
             <div class="credit-line">
                 <p class="credit-role">Site Dev & Undertale References</p>
@@ -648,6 +648,10 @@ st.markdown(
             <div class="credit-line">
                 <p class="credit-role">Certificate Design</p>
                 <p class="credit-name">Manaasve</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Have a magical day! See you Monday =)</p>
+                
             </div>
             <br><br>
             <p class="credit-role">~ Thank You for Playing ~</p>
