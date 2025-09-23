@@ -632,7 +632,7 @@ st.markdown(
             }
         </style>
         <div class="credits-container">
-            <h3 class="credits-title">Made with Hopes and Dreams By</h3>
+            <h3 class="credits-title">Made with Hopes and Dreams By Members of the Literature Club</h3>
             <div class="credit-line">
                 <p class="credit-role">Questions</p>
                 <p class="credit-name">Khanak, Pahul, Prakamya and Shaurya</p>
