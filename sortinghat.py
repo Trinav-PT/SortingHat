@@ -651,10 +651,7 @@ st.markdown(
             </div>
             <div class="credit-line">
                 <p class="credit-role">Have a magical day! See you Monday =)</p>
-                
             </div>
-            <br><br>
-            <p class="credit-role">~ Thank You for Playing ~</p>
         </div>
     </div>
     """,
