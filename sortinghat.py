@@ -212,7 +212,7 @@ def calculate_user_house_scores(results_df):
     return champions, most_neutral
 
 # --- Streamlit page setup ---
-st.set_page_config(page_title="Sorting Hat LMAO", page_icon="🧙‍♂️")
+st.set_page_config(page_title="Sorting Hat", page_icon="🧙‍♂️")
 
 # Initialize session state variables at the very beginning of the script
 if 'house_revealed' not in st.session_state:
