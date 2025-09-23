@@ -415,7 +415,7 @@ if name:
             
             if st.session_state.is_duplicate_name:
                 st.warning("it's almost like you already knew the questions...")
-                st.image("scaryflowey.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
+                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
             if st.session_state.submission_processed:
                 st.session_state.submission_processed = False
