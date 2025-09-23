@@ -321,7 +321,7 @@ st.markdown(
         box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
     ">
         <h3 style="color:#3e2723; font-family: 'Georgia';">What is your name?</h3>
-        <p style="color:#3e2723; font-style: italic;">Enter your full name to reduce the likelihood of encountering a secret jumpscare.</p>
+        <p style="color:#3e2723; font-style: italic;">Enter your full name to reduce the chances of encountering a secret jumpscare.</p>
     </div>
     """,
     unsafe_allow_html=True
