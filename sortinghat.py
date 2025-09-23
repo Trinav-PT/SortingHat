@@ -136,10 +136,6 @@ QUESTIONS = [
     },
 ]
 
-# --- Jumble the options every reload ---
-for question in QUESTIONS:
-    random.shuffle(question['opts'])
-
 def score_answers(selected_options):
     scores = Counter()
     for option in selected_options:
@@ -367,7 +363,7 @@ if name:
             for text, score_dict in q["opts"]:
                 if text == choice:
                     answers.append(score_dict)
-        st.write("---")
+            st.write("---")
 
     # Styled button
     st.markdown(
@@ -428,7 +424,7 @@ if name:
             
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
-                
+            
                 current_results_df = pd.read_csv("results.csv")
                 new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
                 new_results_df.to_csv("results.csv", index=False)
