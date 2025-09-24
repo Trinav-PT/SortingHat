@@ -702,7 +702,7 @@ if name:
                         # Create the PDF and make the download button
                         pdf_buffer = create_certificate_pdf(name, house, certificate_file)
                         st.download_button(
-                            label="Download Certificate",
+                            label="Download Certificate (With your name in it!)",
                             data=pdf_buffer,
                             file_name=f"{name}_{house}_Certificate.pdf",
                             mime="application/pdf",
