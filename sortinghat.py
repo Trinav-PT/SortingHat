@@ -615,8 +615,8 @@ if name:
                 st.session_state.submission_processed = False
             
                 counts = score_answers(current_answers)
-                house, tied = determine_house(house_certs)
-                house = random.choice(house_certs) if len(house_certs) > 1 else house_certs[0]
+                house, tied = determine_house(counts)
+                house = random.choice(tied) if len(tied) > 1 else tied[0]
                 
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
