@@ -22,7 +22,45 @@ CERTIFICATE_IMAGES = {
     "Ravenclaw": "rvnclaw.jpeg",
     "Hufflepuff": "huffpuff.jpeg"
 }
+def create_certificate_pdf(name, house, certificate_image_path):
+    """
+    Generates a personalized house certificate as a PDF.
+    """
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    
+    # Load the certificate image
+    try:
+        img = Image.open(certificate_image_path)
+        img_width, img_height = img.size
+        
+        # Scale image to fit A4 page
+        aspect = img_height / float(img_width)
+        page_width, page_height = A4
+        
+        image_x = 0
+        image_y = (page_height - page_width * aspect) / 2
+        image_width = page_width
+        
+        c.drawImage(ImageReader(certificate_image_path), image_x, image_y, width=image_width, height=image_width * aspect)
+        
+        # Add the name to the certificate
+        c.setFont("Helvetica-Bold", 36)
+        c.setFillColorRGB(0, 0, 0) # Black color for the text
+        
+        # Position the name
+        text_width = c.stringWidth(name, "Helvetica-Bold", 36)
+        text_x = (page_width - text_width) / 2
+        text_y = image_y + (image_width * aspect) * 0.46 # Adjust this value to vertically center the name on the certificate image
 
+        c.drawString(text_x, text_y, name)
+        
+    except FileNotFoundError:
+        c.drawString(100, 700, "Error: Certificate template not found.")
+    
+    c.save()
+    buffer.seek(0)
+    return buffer
 QUESTIONS = [
     {
         "q": "You were in the library and accidentally skipped lunch. What do you do?",
@@ -577,8 +615,9 @@ if name:
                 st.session_state.submission_processed = False
             
                 counts = score_answers(current_answers)
-                house, tied = determine_house(counts)
-            
+                house, tied = determine_house(house_certs)
+                house = random.choice(house_certs) if len(house_certs) > 1 else house_certs[0]
+                
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
             
@@ -635,9 +674,9 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # Display certificate image after house reveal
-            if house in CERTIFICATE_IMAGES:
-                certificate_file = CERTIFICATE_IMAGES[house]
+            # Display certificate image and download button
+            if house in HOUSE_CERTIFICATES:
+                certificate_file = HOUSE_CERTIFICATES[house]
                 try:
                     st.markdown(
                         """
@@ -655,7 +694,20 @@ if name:
                         """,
                         unsafe_allow_html=True
                     )
-                    st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
+                    
+                    col1, col2 = st.columns([1, 1])
+                    with col1:
+                        st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
+                    with col2:
+                        # Create the PDF and make the download button
+                        pdf_buffer = create_certificate_pdf(name, house, certificate_file)
+                        st.download_button(
+                            label="Download Certificate",
+                            data=pdf_buffer,
+                            file_name=f"{name}_{house}_Certificate.pdf",
+                            mime="application/pdf",
+                            help="Click to download your official Hogwarts House Certificate as a PDF."
+                        )
                 except FileNotFoundError:
                     st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
                 except Exception as e:
