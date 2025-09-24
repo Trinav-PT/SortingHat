@@ -740,26 +740,9 @@ st.markdown(
         color: #f8f4e5;
         font-family: 'Times New Roman', serif;
         position: relative;
-        overflow: hidden;
-        min-height: 250px;
     ">
-        <style>
-            @keyframes credit-scroll {
-                from { transform: translateY(100%); }
-                to { transform: translateY(-100%); }
-            }
-            .credits-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                animation: credit-scroll 30s linear infinite;
-                text-align: center;
-                white-space: nowrap;
-            }
-            .credit-line {
-                font-size: 18px;
-                line-height: 1.8;
-                margin: 15px 0;
-            }
+        <p style="text-align: center; margin-bottom: 0;">&copy; Made by the Literary Club, IIIT-Delhi</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
