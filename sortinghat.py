@@ -51,7 +51,7 @@ def create_certificate_pdf(name, house, certificate_image_path):
         # Position the name
         text_width = c.stringWidth(name, "Helvetica-Bold", 36)
         text_x = (page_width - text_width) / 2
-        text_y = image_y + (image_width * aspect) * 0.46 # Adjust this value to vertically center the name on the certificate image
+        text_y = image_y + (image_width * aspect) * 0.50 # Adjust this value to vertically center the name on the certificate image
 
         c.drawString(text_x, text_y, name)
         
