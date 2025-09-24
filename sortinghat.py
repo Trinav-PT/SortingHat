@@ -698,16 +698,18 @@ if name:
                     col1, col2 = st.columns([1, 1])
                     with col1:
                         st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
-                    with col2:
-                        # Create the PDF and make the download button
-                        pdf_buffer = create_certificate_pdf(name, house, certificate_file)
-                        st.download_button(
-                            label="Download Certificate (With your name in it!)",
-                            data=pdf_buffer,
-                            file_name=f"{name}_{house}_Certificate.pdf",
-                            mime="application/pdf",
-                            help="Click to download your official Hogwarts House Certificate as a PDF."
-                        )
+                    
+                    # Move the download button to a new block below the columns
+                    st.markdown("---") # Add a separator for better layout
+                    
+                    pdf_buffer = create_certificate_pdf(name, house, certificate_file)
+                    st.download_button(
+                        label="Download Certificate (With your name in it!)",
+                        data=pdf_buffer,
+                        file_name=f"{name}_{house}_Certificate.pdf",
+                        mime="application/pdf",
+                        help="Click to download your official Hogwarts House Certificate as a PDF."
+                    )
                 except FileNotFoundError:
                     st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
                 except Exception as e:
