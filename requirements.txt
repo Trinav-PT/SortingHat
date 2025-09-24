@@ -2,3 +2,6 @@ streamlit
 pandas
 gspread
 gspread-dataframe
+altair
+reportlab
+pillow
