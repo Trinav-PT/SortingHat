@@ -308,6 +308,14 @@ def check_easter_egg(name):
         {
             "exact": ["prajna", "uma", "suhaani"],
             "message": "I loved the apple crumple!"
+        },
+        {
+            "exact": ["manvi", "tejas", "rishon", "navya", "jagrav"],
+            "message": "I loved the apple crumple!"
+        },
+        {
+            "exact": ["tisha", "yatharth", "abhigyan", "shikhraj"],
+            "message": "Were we bandmates at one point in this one band called Spectrum?"
         }
     ]
     
