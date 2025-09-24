@@ -23,6 +23,28 @@ CERTIFICATE_IMAGES = {
     "Hufflepuff": "huffpuff.jpeg"
 }
 
+def generate_certificate_pdf(name, house):
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # Background certificate (you already have CERTIFICATE_IMAGES dict)
+    cert_path = CERTIFICATE_IMAGES[house]
+    img = Image.open(cert_path)
+    img_reader = ImageReader(img)
+
+    # Draw full-page image
+    c.drawImage(img_reader, 0, 0, width=width, height=height)
+
+    # Add name (adjust coordinates to fit template nicely)
+    c.setFont("Helvetica-Bold", 28)
+    c.setFillColorRGB(0.1, 0.1, 0.1)
+    c.drawCentredString(width/2, height/2, name)
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
 QUESTIONS = [
     {
         "q": "You were in the library and accidentally skipped lunch. What do you do?",
@@ -566,7 +588,17 @@ if name:
                     if text == choice:
                         current_answers.append(score_dict)
                         break
-        
+    if not st.session_state.house_revealed:
+        if st.button("Reveal My House"):
+            if len(answers) != len(QUESTIONS):
+                st.warning("Please answer all questions before revealing your house!")
+            else:
+                if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
+                    st.session_state.is_duplicate_name = True
+                
+                st.session_state.submission_processed = True
+                st.session_state.house_revealed = True
+                st.rerun()
         if len(current_answers) == len(QUESTIONS):
             
             if st.session_state.is_duplicate_name:
