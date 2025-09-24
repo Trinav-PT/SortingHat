@@ -675,8 +675,8 @@ if name:
             )
             
             # Display certificate image and download button
-            if house in HOUSE_CERTIFICATES:
-                certificate_file = HOUSE_CERTIFICATES[house]
+            if house in CERTIFICATE_IMAGES:
+                certificate_file = CERTIFICATE_IMAGES[house]
                 try:
                     st.markdown(
                         """
