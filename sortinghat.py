@@ -7,6 +7,11 @@ from datetime import datetime
 import os
 import difflib
 import time
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+from PIL import Image
+import io
 
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
 
@@ -265,10 +270,6 @@ def check_easter_egg(name):
         {
             "exact": ["prajna", "uma", "suhaani"],
             "message": "I loved the apple crumple!"
-        },
-        {
-            "exact": ["manvi", "navya"],
-            "message": "Spectrum 2.0 gang!"
         }
     ]
     
@@ -654,7 +655,7 @@ if name:
                         """,
                         unsafe_allow_html=True
                     )
-                    st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
+                    st.image(certificate_file, caption=f"Official {house} Certificate", use_column_width=True)
                 except FileNotFoundError:
                     st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
                 except Exception as e:
@@ -747,6 +748,7 @@ if st.checkbox("Show past results"):
             st.write("---")
         except FileNotFoundError:
             st.warning("No past results found yet.")
+
 
 st.markdown("---")
 
