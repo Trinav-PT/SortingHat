@@ -8,16 +8,15 @@ import os
 import difflib
 import time
 
-# --- ADD THIS NEW DICTIONARY AT THE TOP OF YOUR SCRIPT, NEAR HOUSES AND QUESTIONS ---
-# Dictionary to map house names to image filenames
-HOUSE_CERTIFICATES = {
-    "Gryffindor": "gryffnd.jpeg",
-    "Slytherin": "slythn.jpeg",
-    "Ravenclaw": "rvnclaw.jpeg",
-    "Hufflepuff": "huffpuff.jpeg",
-}
-
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
+
+# Certificate image mapping
+CERTIFICATE_IMAGES = {
+    "Gryffindor": "gryffnd.jpeg",
+    "Slytherin": "slythn.jpeg", 
+    "Ravenclaw": "rvnclaw.jpeg",
+    "Hufflepuff": "huffpuff.jpeg"
+}
 
 QUESTIONS = [
     {
@@ -516,7 +515,7 @@ if name:
             for text, score_dict in q["opts"]:
                 if text == choice:
                     answers.append(score_dict)
-                
+            
             st.markdown("<div style='margin-bottom: 2rem;'></div>", unsafe_allow_html=True)
 
     st.markdown(
@@ -631,13 +630,32 @@ if name:
                 unsafe_allow_html=True
             )
             
-            # --- ADD THIS BLOCK HERE TO DISPLAY THE CERTIFICATE IMAGE ---
-            if house in HOUSE_CERTIFICATES:
-                certificate_file = HOUSE_CERTIFICATES[house]
-                # You can add a caption if you like, e.g., f"Official {house} Certificate"
-                st.image(certificate_file, use_column_width=True)
-            # --- END OF ADDED BLOCK ---
-
+            # Display certificate image after house reveal
+            if house in CERTIFICATE_IMAGES:
+                certificate_file = CERTIFICATE_IMAGES[house]
+                try:
+                    st.markdown(
+                        """
+                        <div style="
+                            background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
+                            border: 3px solid #5a4633;
+                            border-radius: 20px;
+                            padding: 20px;
+                            margin-top: 20px;
+                            box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                            text-align: center;
+                        ">
+                            <h2 style="color:#3e2723; font-family: 'Georgia';">Your Official House Certificate</h2>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    st.image(certificate_file, caption=f"Official {house} Certificate", use_column_width=True)
+                except FileNotFoundError:
+                    st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
+                except Exception as e:
+                    st.error(f"Error loading certificate: {str(e)}")
+            
             if len(tied) > 1:
                 tied_houses_str = ", ".join(tied[:-1])
                 if len(tied) > 2:
@@ -740,8 +758,37 @@ st.markdown(
         color: #f8f4e5;
         font-family: 'Times New Roman', serif;
         position: relative;
+        overflow: hidden;
+        min-height: 250px;
     ">
-        <p style="text-align: center; margin-bottom: 0;">&copy; Made by the Literary Club, IIIT-Delhi</p>
+        <style>
+            @keyframes credit-scroll {
+                from { transform: translateY(100%); }
+                to { transform: translateY(-100%); }
+            }
+            .credits-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                animation: credit-scroll 30s linear infinite;
+                text-align: center;
+                white-space: nowrap;
+            }
+            .credit-line {
+                font-size: 18px;
+                line-height: 1.8;
+                margin: 15px 0;
+            }
+        </style>
+        <div class="credits-container">
+            <div class="credit-line">✨ Created with magical code ✨</div>
+            <div class="credit-line">🧙‍♂️ Powered by the Sorting Hat Algorithm 🧙‍♂️</div>
+            <div class="credit-line">🏰 Welcome to your Hogwarts journey! 🏰</div>
+            <div class="credit-line">🦉 May your house bring you wisdom and friendship 🦉</div>
+            <div class="credit-line">⚡ The magic never ends... ⚡</div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True
