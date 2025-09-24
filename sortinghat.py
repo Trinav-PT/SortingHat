@@ -591,23 +591,26 @@ if name:
                 if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
                     st.session_state.is_duplicate_name = True
         
-                # Calculate house and save to CSV BEFORE rerun
+                # Calculate house
                 counts = score_answers(answers)
                 house, tied = determine_house(counts)
                 house = random.choice(tied) if len(tied) > 1 else tied[0]
         
+                # Save result to CSV
                 result = {"name": name, "house": house, "timestamp": datetime.now()}
                 df_result = pd.DataFrame([result])
-        
                 current_results_df = pd.read_csv("results.csv")
                 new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
                 new_results_df.to_csv("results.csv", index=False)
         
                 # Update session state
                 st.session_state.house_revealed = True
-                st.session_state.submission_processed = True
+        
+                # Reset the submission_processed flag so it doesn't write again
+                st.session_state.submission_processed = False
         
                 st.rerun()
+
 
 
     if st.session_state.house_revealed:
