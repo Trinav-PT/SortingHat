@@ -654,7 +654,7 @@ if name:
                         """,
                         unsafe_allow_html=True
                     )
-                    st.image(certificate_file, caption=f"Official {house} Certificate", use_column_width=True)
+                    st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
                 except FileNotFoundError:
                     st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
                 except Exception as e:
