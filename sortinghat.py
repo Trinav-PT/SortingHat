@@ -695,6 +695,7 @@ if name:
                         unsafe_allow_html=True
                     )
                     
+                    col_left_spacer, col_image, col_right_spacer = st.columns([1, 3, 1])
                     with col_image:
                         st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
                     
