@@ -695,8 +695,7 @@ if name:
                         unsafe_allow_html=True
                     )
                     
-                    col_left_spacer, col_image, col_right_spacer = st.columns([1, 3, 1])
-                    with col1:
+                    with col_image:
                         st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
                     
                     # Move the download button to a new block below the columns
@@ -708,7 +707,7 @@ if name:
                         data=pdf_buffer,
                         file_name=f"{name}_{house}_Certificate.pdf",
                         mime="application/pdf",
-                        help="Click to download your official Hogwarts House Certificate as a PDF."
+                        help="Download your official Hogwarts House Certificate with your name in it as a PDF!"
                     )
                 except FileNotFoundError:
                     st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
