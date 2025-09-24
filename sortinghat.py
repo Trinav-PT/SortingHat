@@ -265,6 +265,10 @@ def check_easter_egg(name):
         {
             "exact": ["prajna", "uma", "suhaani"],
             "message": "I loved the apple crumple!"
+        },
+        {
+            "exact": ["manvi", "navya"],
+            "message": "Spectrum 2.0 gang!"
         }
     ]
     
@@ -781,13 +785,40 @@ st.markdown(
                 line-height: 1.8;
                 margin: 15px 0;
             }
+            .credit-role {
+                font-weight: bold;
+                font-size: 20px;
+                color: #e8e0c4;
+            }
+            .credit-name {
+                font-style: italic;
+                color: #d7ccb0;
+            }
+            .credits-title {
+                font-size: 30px;
+                font-family: 'Georgia', serif;
+                font-weight: bold;
+                color: gold;
+                margin-bottom: 20px;
+            }
         </style>
         <div class="credits-container">
-            <div class="credit-line">✨ Created with magical code ✨</div>
-            <div class="credit-line">🧙‍♂️ Powered by the Sorting Hat Algorithm 🧙‍♂️</div>
-            <div class="credit-line">🏰 Welcome to your Hogwarts journey! 🏰</div>
-            <div class="credit-line">🦉 May your house bring you wisdom and friendship 🦉</div>
-            <div class="credit-line">⚡ The magic never ends... ⚡</div>
+            <h3 class="credits-title">Made with Hopes and Dreams By Members of the Literature Club</h3>
+            <div class="credit-line">
+                <p class="credit-role">Questions</p>
+                <p class="credit-name">Khanak, Pahul, Prakamya and Shaurya</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Site Dev & Undertale References</p>
+                <p class="credit-name">Trinav</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Certificate Design</p>
+                <p class="credit-name">Manaasve and Yashvi</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Mischief Managed. See you on Monday =)</p>
+            </div>
         </div>
     </div>
     """,
