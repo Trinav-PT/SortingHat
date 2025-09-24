@@ -8,6 +8,15 @@ import os
 import difflib
 import time
 
+# --- ADD THIS NEW DICTIONARY AT THE TOP OF YOUR SCRIPT, NEAR HOUSES AND QUESTIONS ---
+# Dictionary to map house names to image filenames
+HOUSE_CERTIFICATES = {
+    "Gryffindor": "gryffnd.jpeg",
+    "Slytherin": "slythn.jpeg",
+    "Ravenclaw": "rvnclaw.jpeg",
+    "Hufflepuff": "huffpuff.jpeg",
+}
+
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
 
 QUESTIONS = [
@@ -507,7 +516,7 @@ if name:
             for text, score_dict in q["opts"]:
                 if text == choice:
                     answers.append(score_dict)
-            
+                
             st.markdown("<div style='margin-bottom: 2rem;'></div>", unsafe_allow_html=True)
 
     st.markdown(
@@ -622,6 +631,13 @@ if name:
                 unsafe_allow_html=True
             )
             
+            # --- ADD THIS BLOCK HERE TO DISPLAY THE CERTIFICATE IMAGE ---
+            if house in HOUSE_CERTIFICATES:
+                certificate_file = HOUSE_CERTIFICATES[house]
+                # You can add a caption if you like, e.g., f"Official {house} Certificate"
+                st.image(certificate_file, use_column_width=True)
+            # --- END OF ADDED BLOCK ---
+
             if len(tied) > 1:
                 tied_houses_str = ", ".join(tied[:-1])
                 if len(tied) > 2:
@@ -747,42 +763,3 @@ st.markdown(
                 line-height: 1.8;
                 margin: 15px 0;
             }
-            .credit-role {
-                font-weight: bold;
-                font-size: 20px;
-                color: #e8e0c4;
-            }
-            .credit-name {
-                font-style: italic;
-                color: #d7ccb0;
-            }
-            .credits-title {
-                font-size: 30px;
-                font-family: 'Georgia', serif;
-                font-weight: bold;
-                color: gold;
-                margin-bottom: 20px;
-            }
-        </style>
-        <div class="credits-container">
-            <h3 class="credits-title">Made with Hopes and Dreams By Members of the Literature Club</h3>
-            <div class="credit-line">
-                <p class="credit-role">Questions</p>
-                <p class="credit-name">Khanak, Pahul, Prakamya and Shaurya</p>
-            </div>
-            <div class="credit-line">
-                <p class="credit-role">Site Dev & Undertale References</p>
-                <p class="credit-name">Trinav</p>
-            </div>
-            <div class="credit-line">
-                <p class="credit-role">Certificate Design</p>
-                <p class="credit-name">Manaasve</p>
-            </div>
-            <div class="credit-line">
-                <p class="credit-role">Mischief Managed. See you on Monday =)</p>
-            </div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
