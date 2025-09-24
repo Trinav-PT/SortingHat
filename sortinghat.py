@@ -278,7 +278,7 @@ def check_easter_egg(name):
             "message": "How's Korea?"
         },
         {
-            "exact": ["preesha", "lakshit", "kunal gupta", "subham jalan", "yashvi maheshwari"],
+            "exact": ["preesha", "lakshit", "kunal gupta", "subham", "yashvi maheshwari"],
             "message": "Wow even the SC is taking the test!"
         },
         {
