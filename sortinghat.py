@@ -560,7 +560,11 @@ if name:
     
     answers = []
 
-    for i, q in enumerate(QUESTIONS, 1):
+    if 'current_name' not in st.session_state or st.session_state.current_name != name:
+        st.session_state.current_name = name
+        st.session_state.shuffled_questions = random.sample(QUESTIONS, len(QUESTIONS))
+
+    for i, q in enumerate(st.session_state.shuffled_questions, 1):
         st.markdown(
             f"""
             <div style="
@@ -617,7 +621,7 @@ if name:
 
     if not st.session_state.house_revealed:
         if st.button("Reveal My House"):
-            if len(answers) != len(QUESTIONS):
+            if len(answers) != len(st.session_state.shuffled_questions):
                 st.warning("Please answer all questions before revealing your house!")
             else:
                 if name in results_df['name'].values or is_name_similar(name, results_df['name'].values):
@@ -647,7 +651,7 @@ if name:
 
     if st.session_state.house_revealed:
         current_answers = []
-        for i, q in enumerate(QUESTIONS, 1):
+        for i, q in enumerate(st.session_state.shuffled_questions, 1):
             if f"q{i}" in st.session_state and st.session_state[f"q{i}"] is not None:
                 choice = st.session_state[f"q{i}"]
                 for text, score_dict in q["opts"]:
