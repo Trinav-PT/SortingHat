@@ -1,4 +1,4 @@
 ![doakes](https://github.com/user-attachments/assets/e9446141-1121-4039-ba32-d39dc0f929aa)
 
 
-Did you come here looking for the magic word?
+Did you come here looking for the magic word? Or the scoring for questions? I just can't prove it.
