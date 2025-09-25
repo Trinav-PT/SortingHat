@@ -15,7 +15,6 @@ import io
 
 HOUSES = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
 
-# Certificate image mapping
 CERTIFICATE_IMAGES = {
     "Gryffindor": "gryffnd.jpeg",
     "Slytherin": "slythn.jpeg", 
@@ -29,12 +28,12 @@ def create_certificate_pdf(name, house, certificate_image_path):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     
-    # Load the certificate image
+    
     try:
         img = Image.open(certificate_image_path)
         img_width, img_height = img.size
         
-        # Scale image to fit A4 page
+        
         aspect = img_height / float(img_width)
         page_width, page_height = A4
         
@@ -44,14 +43,13 @@ def create_certificate_pdf(name, house, certificate_image_path):
         
         c.drawImage(ImageReader(certificate_image_path), image_x, image_y, width=image_width, height=image_width * aspect)
         
-        # Add the name to the certificate
-        c.setFont("Helvetica-Bold", 36)
-        c.setFillColorRGB(0, 0, 0) # Black color for the text
         
-        # Position the name
+        c.setFont("Helvetica-Bold", 36)
+        c.setFillColorRGB(0, 0, 0) 
+        
         text_width = c.stringWidth(name, "Helvetica-Bold", 36)
         text_x = (page_width - text_width) / 2
-        text_y = image_y + (image_width * aspect) * 0.54 # Adjust this value to vertically center the name on the certificate image
+        text_y = image_y + (image_width * aspect) * 0.54 
 
         c.drawString(text_x, text_y, name)
         
