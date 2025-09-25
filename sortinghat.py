@@ -186,24 +186,25 @@ QUESTIONS = [
     },
     {
         "q": "Which circumstances would be absolutely intolerable for you?",
-        "options": [
-            {"text": "Being chased by evil forces - you are constantly on the run and don’t have a moment’s rest", "scores": {"Hufflepuff": 1, "Slytherin": 1}},
-            {"text": "An infamous gossip column writing about you - you become a widespread laughingstock, strangers recognise you and laugh", "scores": {"Slytherin": 1, "Ravenclaw": 1, "Hufflepuff": 2}},
-            {"text": "Losing your magic - you have to drop out of Hogwarts and live a normal life, after being raised magical", "scores": {"Slytherin": 2, "Ravenclaw": 2}},
-            {"text": "Sacrificing your life for the greater good, but no one knows - you die alone", "scores": {"Gryffindor": 1, "Slytherin": 2}}
-    ],
+        "opts": [
+            ("Being chased by evil forces - you are constantly on the run and don't have a moment's rest", {"Hufflepuff": 1, "Slytherin": 1}),
+            ("An infamous gossip column writing about you - you become a widespread laughingstock, strangers recognise you and laugh", {"Slytherin": 1, "Ravenclaw": 1, "Hufflepuff": 2}),
+            ("Losing your magic - you have to drop out of Hogwarts and live a normal life, after being raised magical", {"Slytherin": 2, "Ravenclaw": 2}),
+            ("Sacrificing your life for the greater good, but no one knows - you die alone", {"Gryffindor": 1, "Slytherin": 2}),
+        ],
     },
     {
         "q": "What would be your favourite quirk of the Hogwarts castle?",
-        "options": [
-            {"text": "The moving grand staircase with trip jinxes and missing steps", "scores": {"Gryffindor": 2, "Ravenclaw": 1}},
-            {"text": "The talking portraits, animated with imprints of dead peoples’ souls", "scores": {"Ravenclaw": 2, "Hufflepuff": 1}},
-            {"text": "The enchanted ceiling that changes appearance according to the weather outside", "scores": {"Hufflepuff": 2, "Ravenclaw": 1}},
-            {"text": "The hidden passage that opens with a spell into the popular sweets shop in the neighbouring village", "scores": {"Hufflepuff": 2, "Slytherin": 1}},
-            {"text": "The ghost poltergeist who is in equal parts annoying and hilarious, but never fails to pull a good prank!", "scores": {"Gryffindor": 2, "Ravenclaw": 1, "Slytherin": 1}}
-        ]
-}
+        "opts": [
+            ("The moving grand staircase with trip jinxes and missing steps", {"Gryffindor": 2, "Ravenclaw": 1}),
+            ("The talking portraits, animated with imprints of dead peoples' souls", {"Ravenclaw": 2, "Hufflepuff": 1}),
+            ("The enchanted ceiling that changes appearance according to the weather outside", {"Hufflepuff": 2, "Ravenclaw": 1}),
+            ("The hidden passage that opens with a spell into the popular sweets shop in the neighbouring village", {"Hufflepuff": 2, "Slytherin": 1}),
+            ("The ghost poltergeist who is in equal parts annoying and hilarious, but never fails to pull a good prank!", {"Gryffindor": 2, "Ravenclaw": 1, "Slytherin": 1}),
+        ],
+    },
 ]
+
 
 def score_answers(selected_options):
     scores = Counter()
