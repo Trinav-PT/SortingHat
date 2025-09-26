@@ -366,7 +366,7 @@ def calculate_user_house_scores(results_df):
         import random
         for house in HOUSES:
             if house != assigned_house:
-                user_scores[name][house] += random.randint(1, 5)
+                user_scores[name][house] += 3
 
     champions = {}
     for house in HOUSES:
