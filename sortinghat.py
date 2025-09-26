@@ -293,7 +293,7 @@ def check_easter_egg(name):
         },
         {
             "exact": ["nikunj"],
-            "message": "How's Korea?"
+            "message": "How's Korea going?"
         },
         {
             "exact": ["preesha", "lakshit", "kunal gupta", "subham", "yashvi maheshwari"],
