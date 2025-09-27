@@ -230,6 +230,40 @@ def is_name_similar(new_name, past_names, threshold=0.8):
 def check_easter_egg(name):
     name_lower = name.lower().strip()
     
+    # Special easter egg for trinav - wipe out all elements and show special content
+    if name_lower == "trinav":
+        st.markdown(
+            """
+            <style>
+            .stApp > div {
+                visibility: hidden;
+            }
+            .stApp {
+                background: url('floweyhaha.png') no-repeat center center fixed !important;
+                background-size: cover !important;
+            }
+            .special-trinav-content {
+                visibility: visible !important;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem;
+                font-weight: bold;
+                color: #ffffff;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                z-index: 9999;
+                text-align: center;
+            }
+            </style>
+            <div class="special-trinav-content">
+                you cannot play as me
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.stop()  # Stop execution of the rest of the app
+    
     easter_eggs = [
         {
             "exact": ["pahul", "prakamya", "khanak", "shaurya", "manaasve", "yashvi jalan"],
@@ -262,10 +296,6 @@ def check_easter_egg(name):
         {
             "exact": ["kabir bhalla", "rohan gupta", "anahad"],
             "message": "Let's go Quiz Club!"
-        },
-        {
-            "exact": ["trinav"],
-            "message": "So it's you"
         },
         {
             "exact": ["raka"],
@@ -689,8 +719,6 @@ if name:
         
                 st.rerun()
 
-
-
     if st.session_state.house_revealed:
         current_answers = []
         for i, q in enumerate(st.session_state.shuffled_questions, 1):
@@ -699,58 +727,17 @@ if name:
                 for text, score_dict in q["opts"]:
                     if text == choice:
                         current_answers.append(score_dict)
-                        break
-        
-        if len(current_answers) == len(QUESTIONS):
-            
-            if st.session_state.is_duplicate_name:
-                st.warning("it's almost like you already knew the questions...")
-                st.image("sansnoeyes.png", caption="you can't understand how this feels. knowing that one day, without warning, it's all going to be reset.")
 
-            if st.session_state.submission_processed:
-                st.session_state.submission_processed = False
-            
-                counts = score_answers(current_answers)
-                house, tied = determine_house(counts)
-                house = random.choice(tied) if len(tied) > 1 else tied[0]
-                
-                result = {"name": name, "house": house, "timestamp": datetime.now()}
-                df_result = pd.DataFrame([result])
-            
-                current_results_df = pd.read_csv("results.csv")
-                new_results_df = pd.concat([current_results_df, df_result], ignore_index=True)
-                new_results_df.to_csv("results.csv", index=False)
-
-            with st.spinner('The Sorting Hat is deciding...'):
-                time.sleep(2)
-
-            if not st.session_state.balloons_shown:
-                st.balloons()
-                st.session_state.balloons_shown = True
-
+        if current_answers:
             counts = score_answers(current_answers)
             house, tied = determine_house(counts)
             
-            house_colors = {
-                "Gryffindor": "#7F0909",
-                "Slytherin": "#1A472A",
-                "Ravenclaw": "#0E1A40",
-                "Hufflepuff": "#B8860B",
-                "Neutral": "#CD5C5C"
-            }
-
-            bg_color = house_colors.get(house, "#CD5C5C")
-            st.markdown(
-                f"""
-                <style>
-                .stApp {{
-                    background-color: {bg_color};
-                    transition: background-color 1s;
-                }}
-                </style>
-                """,
-                unsafe_allow_html=True
-            )
+            if st.session_state.is_duplicate_name:
+                st.warning("⚠️ This name appears to be already taken or very similar to an existing entry. Please consider using a different name.")
+            
+            if not st.session_state.balloons_shown:
+                st.balloons()
+                st.session_state.balloons_shown = True
             
             st.markdown(
                 f"""
@@ -758,150 +745,47 @@ if name:
                     background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
                     border: 3px solid #5a4633;
                     border-radius: 20px;
-                    padding: 20px;
-                    margin-top: 30px;
-                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
+                    padding: 30px;
+                    margin: 30px 0;
                     text-align: center;
+                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
                 ">
-                    <h2 style="color:#3e2723; font-family: 'Georgia';">{name}, you have been assigned to...</h2>
-                    <h1 style="color:#3e2723; font-family: 'Georgia';">{house}!</h1>
+                    <h1 style="color:#3e2723; font-family: 'Georgia'; font-size: 2.5em; margin-bottom: 20px;">
+                        🎉 Congratulations! 🎉
+                    </h1>
+                    <h2 style="color:#8B0000; font-family: 'Georgia'; font-size: 2em;">
+                        You belong in... <strong>{house}!</strong>
+                    </h2>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-            
-            # Display certificate image and download button
-            if house in CERTIFICATE_IMAGES:
-                certificate_file = CERTIFICATE_IMAGES[house]
-                try:
-                    st.markdown(
-                        """
-                        <div style="
-                            background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
-                            border: 3px solid #5a4633;
-                            border-radius: 20px;
-                            padding: 20px;
-                            margin-top: 20px;
-                            box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
-                            text-align: center;
-                        ">
-                            <h2 style="color:#3e2723; font-family: 'Georgia';">Your Official House Certificate</h2>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    
-                    col_left_spacer, col_image, col_right_spacer = st.columns([1, 3, 1])
-                    with col_image:
-                        st.image(certificate_file, caption=f"Official {house} Certificate", use_container_width=True)
-                    
-                    # Move the download button to a new block below the columns
-                    st.markdown("---") # Add a separator for better layout
-                    
-                    pdf_buffer = create_certificate_pdf(name, house, certificate_file)
-                    st.download_button(
-                        label="Download Certificate (With your name in it!)",
-                        data=pdf_buffer,
-                        file_name=f"{name}_{house}_Certificate.pdf",
-                        mime="application/pdf",
-                        help="Download your official Hogwarts House Certificate with your name in it as a PDF!"
-                    )
-                except FileNotFoundError:
-                    st.warning(f"Certificate image '{certificate_file}' not found. Please make sure the image file is in the correct directory.")
-                except Exception as e:
-                    st.error(f"Error loading certificate: {str(e)}")
             
             if len(tied) > 1:
-                tied_houses_str = ", ".join(tied[:-1])
-                if len(tied) > 2:
-                    tied_houses_str += ","
-                tied_houses_str += f" and {tied[-1]}"
-                st.info(f"The sorting hat found a tie between {tied_houses_str} before making a final decision.")
-
-            df_scores_chart = pd.DataFrame({
-                "House": counts.keys(),
-                "Points": counts.values()
-            })
+                st.info(f"You had tied scores for: {', '.join(tied)}. The Sorting Hat randomly chose {house} for you!")
             
-            st.markdown(
-                """
-                <div style="
-                    background: linear-gradient(135deg, #f8f4e5, #e8e0c4);
-                    border: 3px solid #5a4633;
-                    border-radius: 20px;
-                    padding: 20px;
-                    margin-top: 30px;
-                    box-shadow: 6px 6px 12px rgba(0,0,0,0.25);
-                    text-align: center;
-                ">
-                    <h2 style="color:#3e2723; font-family: 'Georgia';">Your Point Distribution</h2>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            # Display scores
+            st.markdown("### Your House Scores:")
+            for house_name in HOUSES:
+                score = counts.get(house_name, 0)
+                st.write(f"**{house_name}**: {score} points")
             
-            house_color_map = {
-                "Gryffindor": "#7F0909",
-                "Slytherin": "#1A472A",
-                "Ravenclaw": "#0E1A40",
-                "Hufflepuff": "#FFD700"
-            }
-            
-            total_points = df_scores_chart['Points'].sum()
-            df_scores_chart['Percentage'] = (df_scores_chart['Points'] / total_points) * 100
-            
-            base_chart = alt.Chart(df_scores_chart).encode(
-                theta=alt.Theta("Points:Q", stack=True),
-                color=alt.Color(
-                    "House:N",
-                    scale=alt.Scale(
-                        domain=list(house_color_map.keys()),
-                        range=list(house_color_map.values())
-                    ),
-                    legend=None
-                ),
-                tooltip=["House", "Points"]
-            )
-            
-            pie = base_chart.mark_arc(outerRadius=120).encode(
-                tooltip=["House", "Points", alt.Tooltip("Percentage", format=".1f", title="Percentage")]
-            )
-            
-            text = base_chart.mark_text(radius=140).encode(
-                text=alt.Text("Percentage", format=".1f"),
-                order=alt.Order("Points", sort="descending"),
-                color=alt.value("black")
-            )
-            
-            combined_chart = (pie + text).properties(
-                title="Your Personal House Points Distribution"
-            ).interactive()
-            
-            st.altair_chart(combined_chart, use_container_width=True)
-
-st.write("---")
-if st.checkbox("Show past results"):
-    password_input = st.text_input(
-        "Do you really think you can comprehend this knowledge? Then enter the magic word...",
-        type="password"
-    )
-    try:
-        correct_password = st.secrets["passwords"]["admin"]
-    except KeyError:
-        st.error("The admin password is not configured. Please add it to your secrets.toml file.")
-        st.stop()
-
-    if password_input == correct_password:
-        try:
-            df_admin = pd.read_csv("results.csv")
-            st.dataframe(df_admin)
-            st.write("---")
-        except FileNotFoundError:
-            st.warning("No past results found yet.")
-
+            # Certificate download
+            if house in CERTIFICATE_IMAGES:
+                certificate_path = CERTIFICATE_IMAGES[house]
+                if os.path.exists(certificate_path):
+                    try:
+                        pdf_buffer = create_certificate_pdf(name, house, certificate_path)
+                        st.download_button(
+                            label=f"📜 Download Your {house} Certificate",
+                            data=pdf_buffer,
+                            file_name=f"{name}_{house}_Certificate.pdf",
+                            mime="application/pdf"
+                        )
+                    except Exception as e:
+                        st.error(f"Could not generate certificate: {str(e)}")
 
 st.markdown("---")
-
 st.markdown(
     """
     <div style="
