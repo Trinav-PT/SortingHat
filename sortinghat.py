@@ -608,10 +608,7 @@ if name:
             [data-testid="stAppViewBlockContainer"] > div {{
                  display: none !important;
             }}
-            .stApp::after {{
-                content: "you cannot play as me";
-                /* ... rest of your text styling ... */
-                z-index: 9999;
+            
             }}
             
             .stApp {{
@@ -629,7 +626,10 @@ if name:
                 top: 0;
                 left: 0;
             }}
-            
+            .stApp::after {{
+                content: "you cannot play as me";
+                /* ... rest of your text styling ... */
+                z-index: 9999;
             
             </style>
             """,
