@@ -262,7 +262,7 @@ def check_easter_egg(name):
             """,
             unsafe_allow_html=True
         )
-        st.stop()  # Stop execution of the rest of the app
+        #st.stop()  # Stop execution of the rest of the app
     
     easter_eggs = [
         {
