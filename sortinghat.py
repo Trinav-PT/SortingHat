@@ -358,7 +358,8 @@ def check_easter_egg(name):
 
 def calculate_user_house_scores(results_df):
     if len(results_df) == 0:
-        return {}, "None"
+        # Change: Return empty dicts for top 3 champions
+        return {house: [] for house in HOUSES}, "None"
 
     user_scores = {}
     
@@ -374,23 +375,36 @@ def calculate_user_house_scores(results_df):
         import random
         for house in HOUSES:
             if house != assigned_house:
-                user_scores[name][house] += 3
+                user_scores[name][house] += 1.5
 
-    champions = {}
-    for house in HOUSES:
-        max_relative_score = -100
-        champion = "None"
-        
-        for user, scores in user_scores.items():
+    
+    # --- CHANGE STARTS HERE: Calculating Top 3 Champions ---
+    champions = {house: [] for house in HOUSES} # Changed to list to store multiple users
+    
+    # Calculate relative scores for all users and all houses
+    all_relative_scores = {}
+    for user, scores in user_scores.items():
+        all_relative_scores[user] = {}
+        for house in HOUSES:
             other_houses = [h for h in HOUSES if h != house]
             other_avg = sum(scores[h] for h in other_houses) / len(other_houses) if other_houses else 0
             relative_score = scores[house] - other_avg
+            all_relative_scores[user][house] = relative_score
+
+    # Determine Top 3 for each house
+    for house in HOUSES:
+        # Create a list of (user, relative_score) tuples
+        house_leaderboard = []
+        for user in user_scores:
+            house_leaderboard.append((user, all_relative_scores[user][house]))
             
-            if relative_score > max_relative_score:
-                max_relative_score = relative_score
-                champion = user
+        # Sort the leaderboard by score descending
+        house_leaderboard.sort(key=lambda item: item[1], reverse=True)
         
-        champions[house] = champion
+        # Take the top 3 (or fewer if less than 3 results)
+        top_three = [(user, score) for user, score in house_leaderboard[:3]]
+        champions[house] = top_three
+    # --- CHANGE ENDS HERE ---
 
     min_variance = float('inf')
     most_neutral = "None"
