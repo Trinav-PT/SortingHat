@@ -239,7 +239,7 @@ def check_easter_egg(name):
                 visibility: hidden;
             }
             .stApp {
-                background: st.image('floweyhaha.png') no-repeat center center fixed !important;
+                background: url('floweyhaha.png') no-repeat center center fixed !important;
                 background-size: cover !important;
             }
             .special-trinav-content {
