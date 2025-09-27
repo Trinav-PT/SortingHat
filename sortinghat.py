@@ -577,6 +577,45 @@ st.markdown(
 name = st.text_input("", key="name_input").strip()
 
 if name:
+    # --- INSERT TRINAV'S SPECIAL CODE HERE ---
+    name_lower = name.lower()
+    if name_lower == "trinav":
+        st.markdown(
+            """
+            <style>
+            /* Hide everything */
+            /* Using a more aggressive selection based on your original thought */
+            .stApp > header, .stApp > section,
+            /* Target all child elements in the main body (the Streamlit way) */
+            [data-testid="stAppViewBlockContainer"] > div {
+                 display: none !important;
+            }
+            
+            /* Set background and show message */
+            .stApp {
+                background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAADKCAMAAAC7SK2iAAAAt1BMVEU...') no-repeat center center fixed !important;
+                background-size: cover !important;
+            }
+            
+            .stApp::after {
+                content: "you cannot play as me";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem;
+                font-weight: bold;
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                z-index: 9999;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        st.stop()
+
+if name:
     easter_egg_message = check_easter_egg(name)
     if easter_egg_message:
         st.markdown(
