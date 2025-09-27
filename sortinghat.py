@@ -580,22 +580,24 @@ if name:
     # --- INSERT TRINAV'S SPECIAL CODE HERE ---
     name_lower = name.lower()
     if name_lower == "trinav":
+        # Define the URL you want to open in a new tab
         new_tab_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" # Example link (Rick Roll)
 
+        # CHECK THAT THE TRIPLE-QUOTES ARE CORRECTLY PLACED HERE VVV
         st.markdown(
-            f"""
+            f""" 
             <style>
             /* Hide everything on the current page */
             .stApp > header, .stApp > section,
-            [data-testid="stAppViewBlockContainer"] > div {
+            [data-testid="stAppViewBlockContainer"] > div {{
                  display: none !important;
-            }
+            }}
             
             /* Set background and show message for the jumpscare */
-            .stApp {
+            .stApp {{
                 background: url('data:image/png;base64,iVBORw0KGg.....') no-repeat center center fixed !important; 
                 background-size: cover !important;
-            }
+            }}
             
             .stApp::after {{
                 content: "you cannot play as me";
@@ -620,7 +622,7 @@ if name:
                     document.getElementById('autoclick_link').click();
                 }}, 100); 
             </script>
-            """,
+            """,  # AND CLOSED HERE ^^^
             unsafe_allow_html=True
         )
         st.stop()
