@@ -273,7 +273,7 @@ def check_easter_egg(name):
         },
         {
             "exact": ["anandita", "chinmayi"],
-            "message": "TEAM CATS!"
+            "message": "TEAM CATS! Thapar jaana chahiye tha ig"
         },
         {
             "exact": ["hussein"],
@@ -286,6 +286,14 @@ def check_easter_egg(name):
         {
             "exact": ["ramam"],
             "message": "Please teach me SMAI and FOCS"
+        },
+        {
+            "exact": ["harmannat"],
+            "message": "Hope Thapar went well!"
+        },
+        {
+            "exact": ["samyaka"],
+            "message": "This ILAK paper is Spain without the S. Let's hope it turns out good."
         },
         {
             "exact": ["mihir"],
