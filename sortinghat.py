@@ -648,7 +648,7 @@ if name:
             }}
             </style>
             
-            <div id="jumpscare-text">you cannot play as me you cannot play as me you cannot play as me</div>
+            <div id="jumpscare-text">you cannot play as me you cannot play as me you cannot play as me you cannot play as me you cannot play as me you cannot play as me sorry</div>
 
             """, 
             unsafe_allow_html=True
