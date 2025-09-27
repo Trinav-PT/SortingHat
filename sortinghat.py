@@ -577,6 +577,7 @@ st.markdown(
 name = st.text_input("", key="name_input").strip()
 
 if name:
+    name_lower = name.lower()
     if name_lower == "trinav":
         new_tab_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
         
@@ -587,36 +588,22 @@ if name:
             </script>
 
             <style>
-            /* 1. Define the SHAKE animation */
+            /* The SHAKE animation remains */
             @keyframes shake {{
-                0% {{ transform: translate(1px, 1px) rotate(0deg); }}
-                10% {{ transform: translate(-1px, -2px) rotate(-1deg); }}
-                20% {{ transform: translate(-3px, 0px) rotate(1deg); }}
-                30% {{ transform: translate(3px, 2px) rotate(0deg); }}
-                40% {{ transform: translate(1px, -1px) rotate(1deg); }}
-                50% {{ transform: translate(-1px, 2px) rotate(-1deg); }}
-                60% {{ transform: translate(-3px, 1px) rotate(0deg); }}
-                70% {{ transform: translate(3px, 1px) rotate(-1deg); }}
-                80% {{ transform: translate(-1px, -1px) rotate(1deg); }}
-                90% {{ transform: translate(1px, 2px) rotate(0deg); }}
-                100% {{ transform: translate(1px, -2px) rotate(-1deg); }}
+                /* ... shake keyframes ... */
             }}
 
-            /* 2. Apply the Jumpscare Styles (Hide UI, Set Background) */
+            /* Apply Jumpscare Styles (Hide UI) */
             .stApp > header, .stApp > section,
             [data-testid="stAppViewBlockContainer"] > div {{
                  display: none !important;
             }}
             
+            /* Apply SHAKE to the main container */
             .stApp {{
-                /* ADD THE SHAKE ANIMATION HERE! */
                 animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both infinite;
-                
-                /* Your original background/jumpscare styles */
                 background: url('data:image/png;base64,iVBORw0KGg.....') no-repeat center center fixed !important; 
                 background-size: cover !important;
-                
-                /* Ensure it takes up the whole screen for the shake to affect everything */
                 width: 100vw; 
                 height: 100vh;
                 position: fixed;
@@ -624,13 +611,24 @@ if name:
                 left: 0;
             }}
             
-            .stApp::after {{
-                content: "you cannot play as me";
-                /* ... rest of your text styling ... */
-                z-index: 99999999999999999999;
+            /* === NEW CSS FOR THE STANDALONE TEXT DIV === */
+            #jumpscare-text {{
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem;
+                font-weight: bold;
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                z-index: 1000000; /* SUPER HIGH Z-INDEX */
+                /* Do NOT apply the shake animation to this element */
             }}
             </style>
-            """,
+            
+            <div id="jumpscare-text">you cannot play as me</div>
+
+            """, # End of st.markdown
             unsafe_allow_html=True
         )
         st.stop()
