@@ -358,8 +358,8 @@ def check_easter_egg(name):
 
 def calculate_user_house_scores(results_df):
     if len(results_df) == 0:
-        # Change: Return empty dicts for top 3 champions
-        return {house: [] for house in HOUSES}, "None"
+        # Changed to return empty list for neutral champions too
+        return {house: [] for house in HOUSES}, []
 
     user_scores = {}
     
@@ -378,48 +378,49 @@ def calculate_user_house_scores(results_df):
                 user_scores[name][house] += 1.5
 
     
-    # --- CHANGE STARTS HERE: Calculating Top 3 Champions ---
-    champions = {house: [] for house in HOUSES} # Changed to list to store multiple users
-    
-    # Calculate relative scores for all users and all houses
+    # Calculating Top 3 Champions (Most House-Aligned)
+    champions = {house: [] for house in HOUSES} 
     all_relative_scores = {}
+    
     for user, scores in user_scores.items():
         all_relative_scores[user] = {}
         for house in HOUSES:
             other_houses = [h for h in HOUSES if h != house]
             other_avg = sum(scores[h] for h in other_houses) / len(other_houses) if other_houses else 0
-            relative_score = scores[house] - other_avg
+            # Relative score calculation remains the same, but the score is not returned
+            relative_score = scores[house] - other_avg 
             all_relative_scores[user][house] = relative_score
 
-    # Determine Top 3 for each house
     for house in HOUSES:
-        # Create a list of (user, relative_score) tuples
         house_leaderboard = []
         for user in user_scores:
             house_leaderboard.append((user, all_relative_scores[user][house]))
             
-        # Sort the leaderboard by score descending
+        # Sort by score descending
         house_leaderboard.sort(key=lambda item: item[1], reverse=True)
         
-        # Take the top 3 (or fewer if less than 3 results)
-        top_three = [(user, score) for user, score in house_leaderboard[:3]]
-        champions[house] = top_three
-    # --- CHANGE ENDS HERE ---
+        # Take the top 3 names only
+        top_three_names = [user for user, score in house_leaderboard[:3]]
+        champions[house] = top_three_names # champions now holds a dictionary of lists of names
 
-    min_variance = float('inf')
-    most_neutral = "None"
+    # Calculating Top 3 Most Neutral (Lowest Variance)
+    neutral_leaderboard = []
     
     for user, scores in user_scores.items():
         score_values = list(scores.values())
         if len(score_values) > 1:
             avg_score = sum(score_values) / len(score_values)
+            # Calculate variance (lowest variance = most neutral)
             variance = sum((score - avg_score) ** 2 for score in score_values) / len(score_values)
+            neutral_leaderboard.append((user, variance))
             
-            if variance < min_variance:
-                min_variance = variance
-                most_neutral = user
+    # Sort by variance ascending
+    neutral_leaderboard.sort(key=lambda item: item[1])
     
-    return champions, most_neutral
+    # Take the top 3 neutral names only
+    top_three_neutral_names = [user for user, variance in neutral_leaderboard[:3]] # This is the new list
+    
+    return champions, top_three_neutral_names
 
 st.set_page_config(page_title="Sorting Hat", page_icon="🧙‍♂️")
 
