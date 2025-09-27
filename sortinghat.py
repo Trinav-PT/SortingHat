@@ -518,11 +518,32 @@ if st.checkbox("Show House Champions & Statistics"):
         )
         
         st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>People who embody their house the most so far:</h3>", unsafe_allow_html=True)
-        for house in HOUSES:
-            champion = champions.get(house, "None")
-            st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most {house}:</strong> {champion}</p>", unsafe_allow_html=True)
         
-        st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most Neutral:</strong> {most_neutral}</p>", unsafe_allow_html=True)
+        for house in HOUSES:
+            leaderboard = champions.get(house, [])
+            
+            # Start the House heading
+            st.markdown(f"<p style='font-size:18px; color:#3e2723; margin-bottom: 0;'><strong>Most {house}:</strong></p>", unsafe_allow_html=True)
+            
+            if leaderboard:
+                # Loop through the list to print names as a numbered list
+                for i, name in enumerate(leaderboard, 1):
+                    st.markdown(f"<p style='font-size:16px; margin-left: 20px; color:#3e2723; margin-top: 5px; margin-bottom: 5px;'>{i}. {name}</p>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<p style='font-size:16px; margin-left: 20px; color:#3e2723;'>No members yet.</p>", unsafe_allow_html=True)
+
+        st.markdown("<h3 style='color:#3e2723; font-family: Georgia; margin-top: 20px;'>People who are the most Neutral:</h3>", unsafe_allow_html=True)
+        
+        # Start the Neutral heading
+        st.markdown(f"<p style='font-size:18px; color:#3e2723; margin-bottom: 0;'><strong>Most Neutral:</strong></p>", unsafe_allow_html=True)
+        
+        if most_neutral:
+            # Loop through the list to print neutral names as a numbered list
+            for i, name in enumerate(most_neutral, 1):
+                st.markdown(f"<p style='font-size:16px; margin-left: 20px; color:#3e2723; margin-top: 5px; margin-bottom: 5px;'>{i}. {name}</p>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<p style='font-size:16px; margin-left: 20px; color:#3e2723;'>No results available yet.</p>", unsafe_allow_html=True)
+
         
         st.markdown("---")
         
