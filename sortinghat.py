@@ -636,7 +636,7 @@ if name:
             /* 5. CSS for the standalone, non-shaking text */
             #jumpscare-text {{
                 position: fixed;
-                top: 50%;
+                top: 70%;
                 left: 50%;
                 transform: translate(-50%, -50%);
                 font-size: 3rem;
