@@ -577,17 +577,22 @@ st.markdown(
 name = st.text_input("", key="name_input").strip()
 
 if name:
-    # --- INSERT TRINAV'S SPECIAL CODE HERE ---
     name_lower = name.lower()
     if name_lower == "trinav":
-        # Define the URL you want to open in a new tab
-        new_tab_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" # Example link (Rick Roll)
-
-        # CHECK THAT THE TRIPLE-QUOTES ARE CORRECTLY PLACED HERE VVV
+        # The link you want to open in the new tab
+        new_tab_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
+        
         st.markdown(
-            f""" 
+            f"""
+            <script>
+                // We use window.open to try and force the new tab immediately
+                // Note: Browser pop-up blockers may still prevent this if it's not
+                // triggered by a direct user action (like a button click).
+                window.open('{new_tab_url}', '_blank');
+            </script>
+            
             <style>
-            /* Hide everything on the current page */
+            /* The CSS Jumpscare remains */
             .stApp > header, .stApp > section,
             [data-testid="stAppViewBlockContainer"] > div {{
                  display: none !important;
@@ -612,21 +617,12 @@ if name:
                 z-index: 9999;
             }}
             </style>
-            
-            <a id='autoclick_link' href='{new_tab_url}' target='_blank' style='display:none;'>Click me</a>
-            
-            <script>
-                // Use a short delay to ensure Streamlit's rendering is complete 
-                // before the click event fires.
-                setTimeout(function() {{
-                    document.getElementById('autoclick_link').click();
-                }}, 100); 
-            </script>
-            """,  # AND CLOSED HERE ^^^
+            """,
             unsafe_allow_html=True
         )
+        # Note: If you still need a simple redirect on the current tab, 
+        # a final option is a simple st.write with a link and a big button.
         st.stop()
-
 if name:
     easter_egg_message = check_easter_egg(name)
     if easter_egg_message:
