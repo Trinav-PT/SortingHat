@@ -502,7 +502,7 @@ if st.checkbox("Show House Champions & Statistics"):
             unsafe_allow_html=True
         )
         
-        st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>Most Dedicated House Members:</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#3e2723; font-family: Georgia;'>People who embody their house the most so far:</h3>", unsafe_allow_html=True)
         for house in HOUSES:
             champion = champions.get(house, "None")
             st.markdown(f"<p style='font-size:18px; color:#3e2723;'><strong>Most {house}:</strong> {champion}</p>", unsafe_allow_html=True)
