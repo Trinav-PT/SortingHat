@@ -374,12 +374,12 @@ def calculate_user_house_scores(results_df):
         if name not in user_scores:
             user_scores[name] = {house: 0 for house in HOUSES}
         
-        user_scores[name][assigned_house] += 10
+        user_scores[name][assigned_house] += 10 + random.randint(-1, 1)
         
         import random
         for house in HOUSES:
             if house != assigned_house:
-                user_scores[name][house] += 5.5
+                user_scores[name][house] += 5.5 + random.randint(0, 1)
 
     
     # Calculating Top 3 Champions (Most House-Aligned)
