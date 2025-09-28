@@ -437,7 +437,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url("https://raw.githubusercontent.com/Trinav-PT/SortingHat/main/scaryflowey.png");
+        background-image: url("https://raw.githubusercontent.com/Trinav-PT/SortingHat/main/hogbg.html");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
