@@ -437,7 +437,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url("https://raw.githubusercontent.com/Trinav-PT/SortingHat/main/hogbg2.png");
+        background-color: #CD5C5C;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
