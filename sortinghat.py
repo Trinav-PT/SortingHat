@@ -489,7 +489,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 headimage = "hp event poster (1).png"
-image_width = 600 # You can adjust this width
+image_width = 900 # You can adjust this width
 
 # Use columns to create space on the left and right, effectively centering the image
 col1, col2, col3 = st.columns([1, 2, 1]) # 1:2:1 ratio for centering (adjust the ratio as needed)
