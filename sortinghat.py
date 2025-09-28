@@ -470,8 +470,9 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True
-st.image("hogbg2.png", width=300)
 )
+st.image("hogbg2.png", width=300)
+
 st.markdown(
     """
     <div style="
