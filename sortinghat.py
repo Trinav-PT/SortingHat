@@ -995,157 +995,76 @@ if st.checkbox("Show past results"):
 st.markdown("---")
 
 st.markdown(
-
-    """
-
-    <div style="
-
-        background: radial-gradient(circle at top, #1a1a1a, #000000);
-
-        border: 2px solid #5a4633;
-
-        border-radius: 15px;
-
-        padding: 20px;
-
-        margin-top: 30px;
-
-        box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
-
-        color: #f8f4e5;
-
-        font-family: 'Times New Roman', serif;
-
-        position: relative;
-
-        overflow: hidden;
-
-        min-height: 250px;
-
-    ">
-
-        <style>
-
-            @keyframes credit-scroll {
-
-                from { transform: translateY(100%); }
-
-                to { transform: translateY(-100%); }
-
-            }
-
-            .credits-container {
-
-                position: absolute;
-
-                top: 0;
-
-                left: 0;
-
-                width: 100%;
-
-                height: 100%;
-
-                animation: credit-scroll 30s linear infinite;
-
-                text-align: center;
-
-                white-space: nowrap;
-
-            }
-
-            .credit-line {
-
-                font-size: 18px;
-
-                line-height: 1.8;
-
-                margin: 15px 0;
-
-            }
-
-            .credit-role {
-
-                font-weight: bold;
-
-                font-size: 20px;
-
-                color: #e8e0c4;
-
-            }
-
-            .credit-name {
-
-                font-style: italic;
-
-                color: #d7ccb0;
-
-            }
-
-            .credits-title {
-
-                font-size: 30px;
-
-                font-family: 'Georgia', serif;
-
-                font-weight: bold;
-
-                color: gold;
-
-                margin-bottom: 20px;
-
-            }
-
-        </style>
-
-        <div class="credits-container">
-
-            <h3 class="credits-title">Made with Hopes and Dreams By Members of the Literature Club</h3>
-
-            <div class="credit-line">
-
-                <p class="credit-role">Questions</p>
-
-                <p class="credit-name">Khanak, Pahul, Prakamya and Shaurya</p>
-
-            </div>
-
-            <div class="credit-line">
-
-                <p class="credit-role">Site Dev & Undertale References</p>
-
-                <p class="credit-name">Trinav</p>
-
-            </div>
-
-            <div class="credit-line">
-
-                <p class="credit-role">Certificate Design</p>
-
-                <p class="credit-name">Manaasve and Yashvi</p>
-
-            </div>
-
-            <div class="credit-line">
-
-                <p class="credit-role">Poster Design</p>
-
-                <p class="credit-name">Sara</p>
-
-            </div>
-
-            <div class="credit-line">
-
-                <p class="credit-role">Mischief Managed. See you on Monday =)</p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    """,
-
-    unsafe_allow_html=True
-
+    """
+    <div style="
+        background: radial-gradient(circle at top, #1a1a1a, #000000);
+        border: 2px solid #5a4633;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+        color: #f8f4e5;
+        font-family: 'Times New Roman', serif;
+        position: relative;
+        overflow: hidden;
+        min-height: 250px;
+    ">
+        <style>
+            @keyframes credit-scroll {
+                from { transform: translateY(100%); }
+                to { transform: translateY(-100%); }
+            }
+            .credits-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                animation: credit-scroll 30s linear infinite;
+                text-align: center;
+                white-space: nowrap;
+            }
+            .credit-line {
+                font-size: 18px;
+                line-height: 1.8;
+                margin: 15px 0;
+            }
+            .credit-role {
+                font-weight: bold;
+                font-size: 20px;
+                color: #e8e0c4;
+            }
+            .credit-name {
+                font-style: italic;
+                color: #d7ccb0;
+            }
+            .credits-title {
+                font-size: 30px;
+                font-family: 'Georgia', serif;
+                font-weight: bold;
+                color: gold;
+                margin-bottom: 20px;
+            }
+        </style>
+        <div class="credits-container">
+            <h3 class="credits-title">Made with Hopes and Dreams By Members of the Literature Club</h3>
+            <div class="credit-line">
+                <p class="credit-role">Questions</p>
+                <p class="credit-name">Khanak, Pahul, Prakamya and Shaurya</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Site Dev & Undertale References</p>
+                <p class="credit-name">Trinav</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Certificate Design</p>
+                <p class="credit-name">Manaasve and Yashvi</p>
+            </div>
+            <div class="credit-line">
+                <p class="credit-role">Mischief Managed. See you on Monday =)</p>
+            </div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
