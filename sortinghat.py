@@ -240,6 +240,10 @@ def check_easter_egg(name):
             "message": "Lit Club real no posers gang!"
         },
         {
+            "exact": ["ishita"],
+            "message": "Still waiting for the day we'll get to perform Stone Cold"
+        },
+        {
             "exact": ["sara"],
             "message": "I'll get you an atom bomb ahhh chocolate in the next meeting if you complete this test"
         },
@@ -668,6 +672,10 @@ if name:
             unsafe_allow_html=True
         )
         st.stop()
+if name:
+    name_lower = name.lower()
+    if name_lower == "chewie":
+        st.image("chewie.jfif")
 if name:
     easter_egg_message = check_easter_egg(name)
     if easter_egg_message:
