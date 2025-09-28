@@ -379,7 +379,7 @@ def calculate_user_house_scores(results_df):
         import random
         for house in HOUSES:
             if house != assigned_house:
-                user_scores[name][house] += 1.5
+                user_scores[name][house] += 5.5
 
     
     # Calculating Top 3 Champions (Most House-Aligned)
