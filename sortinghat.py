@@ -1020,7 +1020,7 @@ st.markdown(
                 left: 0;
                 width: 100%;
                 height: 100%;
-                animation: credit-scroll 30s linear infinite;
+                animation: credit-scroll 50s linear infinite;
                 text-align: center;
                 white-space: nowrap;
             }
