@@ -471,7 +471,17 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.image("hogbg2.png", width=300)
+headimage = "hogbg2.png"
+image_width = 300 # You can adjust this width
+
+# Use columns to create space on the left and right, effectively centering the image
+col1, col2, col3 = st.columns([1, 2, 1]) # 1:2:1 ratio for centering (adjust the ratio as needed)
+
+with col2:
+    try:
+        st.image(headimage, width=image_width)
+    except FileNotFoundError:
+        st.error(f"Image file '{image_file}' not found. Please ensure it's in your directory.")
 
 st.markdown(
     """
