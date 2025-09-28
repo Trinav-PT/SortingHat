@@ -437,7 +437,10 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-color: #CD5C5C;
+        background-image: url("https://raw.githubusercontent.com/Trinav-PT/SortingHat/main/scaryflowey.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
     }
     
     .stRadio > div {
@@ -468,7 +471,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 st.markdown(
     """
     <div style="
