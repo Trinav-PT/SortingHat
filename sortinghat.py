@@ -1007,7 +1007,7 @@ st.markdown(
         font-family: 'Times New Roman', serif;
         position: relative;
         overflow: hidden;
-        min-height: 450px;
+        min-height: 350px;
     ">
         <style>
             @keyframes credit-scroll {
@@ -1020,7 +1020,7 @@ st.markdown(
                 left: 0;
                 width: 100%;
                 height: 100%;
-                animation: credit-scroll 20s linear infinite;
+                animation: credit-scroll 25s linear infinite;
                 text-align: center;
                 white-space: nowrap;
             }
@@ -1061,7 +1061,7 @@ st.markdown(
                 <p class="credit-name">Manaasve and Yashvi</p>
             </div>
             <div class="credit-line">
-                <p class="credit-role">Certificate Design</p>
+                <p class="credit-role">Poster Design</p>
                 <p class="credit-name">Sara</p>
             </div>
             <div class="credit-line">
