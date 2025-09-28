@@ -368,19 +368,19 @@ def calculate_user_house_scores(results_df):
     user_scores = {}
     
     for _, user in results_df.iterrows():
-    name = user['name']
-    assigned_house = user['house']
-
-    if name not in user_scores:
-        user_scores[name] = {house: 0 for house in HOUSES}
-
-    # Assigned house: strong but slightly variable
-    user_scores[name][assigned_house] += 10 + random.randint(-1, 1)
-
-    # Other houses: weaker but noisy
-    for house in HOUSES:
-        if house != assigned_house:
-            user_scores[name][house] += 2 + random.choice([0, 1])
+        name = user['name']
+        assigned_house = user['house']
+    
+        if name not in user_scores:
+            user_scores[name] = {house: 0 for house in HOUSES}
+    
+        # Assigned house: strong but slightly variable
+        user_scores[name][assigned_house] += 10 + random.randint(-1, 1)
+    
+        # Other houses: weaker but noisy
+        for house in HOUSES:
+            if house != assigned_house:
+                user_scores[name][house] += 2 + random.choice([0, 1])
 
     
     # Calculating Top 3 Champions (Most House-Aligned)
