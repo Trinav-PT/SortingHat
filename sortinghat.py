@@ -488,7 +488,17 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+headimage = "hp event poster (1).png"
+image_width = 600 # You can adjust this width
 
+# Use columns to create space on the left and right, effectively centering the image
+col1, col2, col3 = st.columns([1, 2, 1]) # 1:2:1 ratio for centering (adjust the ratio as needed)
+
+with col2:
+    try:
+        st.image(headimage, width=image_width)
+    except FileNotFoundError:
+        st.error(f"Image file '{image_file}' not found. Please ensure it's in your directory.")
 try:
     results_df = pd.read_csv("results.csv")
 except FileNotFoundError:
@@ -559,17 +569,7 @@ if st.checkbox("Show House Champions & Statistics"):
     else:
         st.info("No results available yet. Complete the sorting to see statistics!")
     st.markdown("---")
-headimage = "hp event poster (1).png"
-image_width = 600 # You can adjust this width
 
-# Use columns to create space on the left and right, effectively centering the image
-col1, col2, col3 = st.columns([1, 2, 1]) # 1:2:1 ratio for centering (adjust the ratio as needed)
-
-with col2:
-    try:
-        st.image(headimage, width=image_width)
-    except FileNotFoundError:
-        st.error(f"Image file '{image_file}' not found. Please ensure it's in your directory.")
 
 st.markdown(
     """
