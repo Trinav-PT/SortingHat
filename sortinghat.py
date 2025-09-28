@@ -1005,8 +1005,8 @@ st.markdown(
         box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
         color: #f8f4e5;
         font-family: 'Times New Roman', serif;
-        position: relative;
-        overflow: hidden;
+        position: relative; 
+        overflow: hidden; 
         min-height: 250px;
     ">
         <style>
@@ -1015,7 +1015,7 @@ st.markdown(
                 to { transform: translateY(-100%); }
             }
             .credits-container {
-                position: absolute;
+                position: absolute; 
                 top: 0;
                 left: 0;
                 width: 100%;
@@ -1046,6 +1046,7 @@ st.markdown(
                 margin-bottom: 20px;
             }
         </style>
+        
         <div class="credits-container">
             <h3 class="credits-title">Made with Hopes and Dreams By Members of the Literature Club</h3>
             <div class="credit-line">
@@ -1061,9 +1062,24 @@ st.markdown(
                 <p class="credit-name">Manaasve and Yashvi</p>
             </div>
             <div class="credit-line">
-                <p class="credit-role">Mischief Managed. See you on Monday =)</p>
+                <p class="credit-role">Poster Design</p>
+                <p class="credit-name">Sara</p> </div>
             </div>
+        
+        <div style="
+            position: absolute; 
+            bottom: 20px;       
+            left: 0;
+            width: 100%;        
+            text-align: center; 
+            z-index: 10;        
+            font-size: 20px;    
+            color: #ff9900;     
+            font-weight: bold;
+        ">
+            Mischief Managed. See you on Monday =)
         </div>
+        
     </div>
     """,
     unsafe_allow_html=True
