@@ -471,7 +471,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-headimage = "hogbg2.png"
+headimage = "hp event poster (1).png"
 image_width = 300 # You can adjust this width
 
 # Use columns to create space on the left and right, effectively centering the image
