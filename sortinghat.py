@@ -1061,6 +1061,10 @@ st.markdown(
                 <p class="credit-name">Manaasve and Yashvi</p>
             </div>
             <div class="credit-line">
+                <p class="credit-role">Certificate Design</p>
+                <p class="credit-name">Sara</p>
+            </div>
+            <div class="credit-line">
                 <p class="credit-role">Mischief Managed. See you on Monday =)</p>
             </div>
         </div>
