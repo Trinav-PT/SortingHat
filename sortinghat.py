@@ -248,7 +248,7 @@ def check_easter_egg(name):
             "message": "I'll get you an atom bomb ahhh chocolate in the next meeting if you complete this test"
         },
         {
-            "exact": ["garvit, ankkhel, trisha, diya, arpit, avanie, vrinda, kiranmayee, vedant, zaina, kashish, mahika, sunishka, sanket"],
+            "exact": ["garvit", "ankkhel", "trisha", "diya", "arpit", "avanie", "vrinda", "kiranmayee", "vedant", "zaina", "kashish", "mahika", "sunishka", "sanket"],
             "message": "UG26 welcome to The Spine!"
         },
         {
