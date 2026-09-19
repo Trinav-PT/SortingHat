@@ -329,7 +329,7 @@ def check_easter_egg(name):
         },
         {
             "exact": ["varun"],
-            "message": "Are you roommate Varun or the other Varun?"
+            "message": "Are you roommate Varun or the other Varun? test"
         },
         {
             "exact": ["saanvi bhasker", "tista", "proshita", "kuhuk", "armaan", "shreya", "divy", "manavi", "maan"],
